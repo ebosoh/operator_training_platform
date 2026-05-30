@@ -397,11 +397,18 @@ export function initLoginHandlers() {
         manager: 'manager@buildcorp.no',
         operator: 'operator@email.com'
       };
+      const demoPasswords = {
+        admin: 'admin123',
+        manager: 'manager123',
+        operator: 'operator123'
+      };
       const emailInput = document.getElementById('login-email');
       const pwInput = document.getElementById('login-password');
-      if (emailInput) emailInput.value = demoEmails[role] || '';
-      if (pwInput) pwInput.value = 'demo1234';
-      await performLogin(demoEmails[role], 'demo1234');
+      const email = demoEmails[role] || '';
+      const password = demoPasswords[role] || '';
+      if (emailInput) emailInput.value = email;
+      if (pwInput) pwInput.value = password;
+      await performLogin(email, password);
     });
   });
 
@@ -448,7 +455,7 @@ async function performLogin(email, password) {
       else window.location.hash = '#/';
     }, 500);
   } catch (err) {
-    Toast.error('Feil e-post eller passord. Prøv igjen.', 'Innlogging feilet');
+    Toast.error(err.message || 'Feil e-post eller passord. Prøv igjen.', 'Innlogging feilet');
   } finally {
     if (submitBtn) { submitBtn.classList.remove('loading'); submitBtn.disabled = false; }
   }
@@ -557,7 +564,7 @@ export function initRegisterHandlers() {
       Toast.success(`Konto opprettet! Velkommen, ${result.user.name.split(' ')[0]}!`);
       setTimeout(() => { window.location.hash = '#/catalog'; }, 600);
     } catch (err) {
-      Toast.error('Registrering feilet. Prøv igjen.');
+      Toast.error(err.message || 'Registrering feilet. Prøv igjen.');
     } finally {
       if (submitBtn) { submitBtn.classList.remove('loading'); submitBtn.disabled = false; }
     }
