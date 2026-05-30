@@ -239,14 +239,14 @@ function renderHomeView() {
       <div class="container">
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--space-6)">
           ${[
-            { value: '140+', label: t('home.stats.courses'), icon: '🏗️' },
-            { value: '2,400+', label: t('home.stats.certs'), icon: '📜' },
-            { value: '85+', label: t('home.stats.companies'), icon: '🏢' },
-            { value: '94%', label: t('home.stats.pass_rate'), icon: '✅' },
+            { target: 140, suffix: '+', label: t('home.stats.courses'), icon: '🏗️' },
+            { target: 2400, suffix: '+', label: t('home.stats.certs'), icon: '📜' },
+            { target: 85, suffix: '+', label: t('home.stats.companies'), icon: '🏢' },
+            { target: 94, suffix: '%', label: t('home.stats.pass_rate'), icon: '✅' },
           ].map((s, i) => `
             <div class="animate-fadeInUp delay-${(i+1)*100}" style="text-align:center">
               <div style="font-size:2rem;margin-bottom:0.5rem">${s.icon}</div>
-              <div style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:900;color:var(--color-gold);margin-bottom:0.25rem">${s.value}</div>
+              <div class="stat-counter" data-target="${s.target}" data-suffix="${s.suffix}" style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:900;color:var(--color-gold);margin-bottom:0.25rem">0${s.suffix}</div>
               <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.08em">${s.label}</div>
             </div>
           `).join('')}
@@ -438,6 +438,63 @@ function initHomeHandlers() {
   document.querySelectorAll('.animate-fadeInUp[class*="delay-"]').forEach(el => {
     observer.observe(el);
   });
+
+  // Animated counters that reset and restart on scroll
+  const counters = document.querySelectorAll('.stat-counter');
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const el = entry.target;
+      const target = parseInt(el.getAttribute('data-target'), 10);
+      const suffix = el.getAttribute('data-suffix') || '';
+      
+      if (entry.isIntersecting) {
+        animateCount(el, target, suffix);
+      } else {
+        // Reset counter when out of view
+        el.textContent = `0${suffix}`;
+        if (el.animationFrameId) {
+          cancelAnimationFrame(el.animationFrameId);
+          el.animationFrameId = null;
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+
+  counters.forEach(c => counterObserver.observe(c));
+}
+
+function animateCount(el, target, suffix) {
+  if (el.animationFrameId) {
+    cancelAnimationFrame(el.animationFrameId);
+  }
+  
+  const duration = 1800; // 1.8 seconds smooth count
+  let startTime = null;
+  
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    
+    // Smooth easeOutCubic
+    const easeProgress = 1 - Math.pow(1 - progress, 3);
+    const currentValue = Math.floor(easeProgress * target);
+    
+    // Format large numbers (Norwegian space grouping)
+    let displayValue = currentValue;
+    if (target >= 1000) {
+      displayValue = currentValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+    
+    el.textContent = `${displayValue}${suffix}`;
+    
+    if (progress < 1) {
+      el.animationFrameId = requestAnimationFrame(step);
+    } else {
+      el.animationFrameId = null;
+    }
+  }
+  
+  el.animationFrameId = requestAnimationFrame(step);
 }
 
 // ── Not Found View ────────────────────────────────────────────────────────────
