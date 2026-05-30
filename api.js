@@ -9,9 +9,9 @@
 // ── Config ──────────────────────────────────────────────────────────────────
 const API_CONFIG = {
   // Replace with your deployed Apps Script URL
-  BASE_URL: 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
+  BASE_URL: 'https://script.google.com/macros/s/AKfycbzN1CdYD9PtQ1fCkWTywrBqnR8XlzU5gKIn18t9JbHzTpOE9ZrdOHUf0feWT8RbQq7L/exec',
   TIMEOUT: 15000,
-  USE_MOCK: true, // Set to false when backend is ready
+  USE_MOCK: false, // Set to false when backend is ready
 };
 
 // ── Mock Data Store ──────────────────────────────────────────────────────────
