@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="no" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- SEO -->
+  <title>Typeopplæring.no — Digital Sikkerhetsopplæring | Oslo Liftutleie</title>
+  <meta name="description" content="Digital typegodkjenning for tungt maskineri. 140+ kursmoduler, offisielle diplomer og QR-basert sertifisering for operatører av Oslo Liftutleie." />
+  <meta name="keywords" content="typeopplæring, sikkerhetsopplæring, maskinopplæring, sakselifter, bomlifter, oslo liftutleie, kurs, diplom, sertifisering" />
+  <meta name="author" content="Oslo Liftutleie AS" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://typeopplaering.no/" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Typeopplæring.no — Oslo Liftutleie" />
+  <meta property="og:description" content="Sertifiser deg i tungmaskinopplæring. 299 NOK per godkjenning. Offisielt diplom til CV og LinkedIn." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://typeopplaering.no/" />
+  <meta property="og:image" content="https://typeopplaering.no/assets/images/og-image.jpg" />
+  <meta property="og:locale" content="nb_NO" />
+  <meta property="og:site_name" content="Typeopplæring.no" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Typeopplæring.no — Oslo Liftutleie" />
+  <meta name="twitter:description" content="Digital sikkerhetsopplæring og typegodkjenning for tungt maskineri." />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0B1623" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#C0272D" media="(prefers-color-scheme: light)" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Typeopplæring" />
+  <meta name="msapplication-TileColor" content="#C0272D" />
+  <meta name="msapplication-navbutton-color" content="#0B1623" />
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icon-96.png" />
+  <link rel="shortcut icon" href="icon-96.png" />
+
+  <!-- Fonts — Preload critical weights -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="design-system.css" />
+  <link rel="stylesheet" href="layout.css" />
+  <link rel="stylesheet" href="animations.css" />
+  <link rel="stylesheet" href="components.css" />
+
+  <!-- External Libraries -->
+  <!-- QR Code Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" defer></script>
+  <!-- html2canvas (for certificate generation) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <!-- jsPDF (for PDF export) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
+  <!-- Critical CSS for above-the-fold (inline) -->
+  <style>
+    /* Critical path — prevent FOUC */
+    html { background: #0B1623; }
+
+    body {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      background: #0B1623;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    #app-loader {
+      position: fixed;
+      inset: 0;
+      background: #0B1623;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1.5rem;
+      z-index: 10000;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #app-loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .app-loader-logo {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, #E8393F, #C0272D, #8B1A1E);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: #fff;
+      box-shadow: 0 12px 40px rgba(192, 39, 45, 0.45);
+      animation: pulse-loader 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-loader {
+      0%, 100% { transform: scale(1); box-shadow: 0 12px 40px rgba(192,39,45,0.45); }
+      50% { transform: scale(1.05); box-shadow: 0 16px 50px rgba(192,39,45,0.65); }
+    }
+
+    .app-loader-text {
+      text-align: center;
+    }
+
+    .app-loader-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+
+    .app-loader-sub {
+      font-size: 0.75rem;
+      color: #5A7090;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .app-loader-bar {
+      width: 180px;
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .app-loader-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #C0272D, #FAA21B);
+      border-radius: 999px;
+      animation: loader-progress 1.8s ease-in-out infinite;
+    }
+
+    @keyframes loader-progress {
+      0% { width: 0; margin-left: 0; }
+      50% { width: 80%; margin-left: 10%; }
+      100% { width: 0; margin-left: 100%; }
+    }
+
+    /* Safety alert styles (used in course content) */
+    .safety-alert {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-left: 3px solid #F59E0B;
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+      color: #FCD34D;
+      line-height: 1.6;
+    }
+
+    .safety-alert.danger {
+      background: rgba(239,68,68,0.1);
+      border-color: rgba(239,68,68,0.3);
+      border-left-color: #EF4444;
+      color: #FCA5A5;
+    }
+
+    .safety-alert.info {
+      background: rgba(59,130,246,0.1);
+      border-color: rgba(59,130,246,0.3);
+      border-left-color: #3B82F6;
+      color: #93C5FD;
+    }
+
+    /* Spec table in course content */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin: 1rem 0;
+    }
+
+    .spec-table tr { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .spec-table tr:last-child { border-bottom: none; }
+    .spec-table td { padding: 0.625rem 0.75rem; }
+    .spec-table td:first-child { color: #94A3B8; font-weight: 500; width: 45%; }
+    .spec-table td:last-child { color: #fff; font-weight: 600; }
+
+    /* Checklist preview in course content */
+    .checklist-preview {
+      background: rgba(22,36,54,0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .check-item {
+      padding: 0.5rem 0;
+      font-size: 0.875rem;
+      color: #94A3B8;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .check-item:last-child { border-bottom: none; }
+  </style>
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "Typeopplæring.no",
+    "alternateName": "Oslo Liftutleie Typeopplæring",
+    "url": "https://typeopplaering.no",
+    "description": "Digital sikkerhetsopplæring og typegodkjenning for operatører av tungt maskineri.",
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "Oslo Liftutleie AS",
+      "url": "https://www.osloliftutleie.no"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "299",
+      "priceCurrency": "NOK",
+      "description": "Typegodkjenningskurs per maskintype"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- App Loading Screen -->
+  <div id="app-loader" role="status" aria-label="Laster Typeopplæring.no">
+    <div class="app-loader-logo" aria-hidden="true">OL</div>
+    <div class="app-loader-text">
+      <div class="app-loader-title">Typeopplæring.no</div>
+      <div class="app-loader-sub">Oslo Liftutleie</div>
+    </div>
+    <div class="app-loader-bar" aria-hidden="true">
+      <div class="app-loader-fill"></div>
+    </div>
+  </div>
+
+  <!-- No-JS Fallback -->
+  <noscript>
+    <div style="position:fixed;inset:0;background:#0B1623;display:flex;align-items:center;justify-content:center;z-index:99999;padding:2rem;text-align:center">
+      <div>
+        <div style="font-size:3rem;margin-bottom:1rem">⚠️</div>
+        <h1 style="font-family:Montserrat,sans-serif;color:#fff;margin-bottom:0.5rem">JavaScript påkrevd</h1>
+        <p style="color:#94A3B8">Typeopplæring.no krever JavaScript for å fungere. Aktiver JavaScript i nettleseren din.</p>
+      </div>
+    </div>
+  </noscript>
+
+  <!-- App Root -->
+  <div id="app" aria-live="polite">
+    <!-- Rendered by app.js -->
+  </div>
+
+  <!-- Main Application Module -->
+  <script type="module" src="app.js"></script>
+
+  <!-- Dismiss loader after app initializes -->
+  <script>
+    // Immediately hide loader after a short delay to let the app render
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('app-loader');
+        if (loader) loader.classList.add('hidden');
+      }, 800);
+    });
+  </script>
+
+</body>
+</html>

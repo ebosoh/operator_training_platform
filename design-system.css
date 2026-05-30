@@ -1,0 +1,378 @@
+/* ==========================================================
+   TYPEOPPLÆRING.NO — Design System
+   Oslo Liftutleie Safety Training Platform
+   ========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap');
+
+/* ----------------------------------------------------------
+   1. CSS CUSTOM PROPERTIES (Design Tokens)
+   ---------------------------------------------------------- */
+:root {
+  /* Brand Colors */
+  --color-primary:        #C0272D;
+  --color-primary-dark:   #8B1A1E;
+  --color-primary-light:  #E8393F;
+  --color-primary-glow:   rgba(192, 39, 45, 0.25);
+
+  --color-gold:           #FAA21B;
+  --color-gold-dark:      #D4880E;
+  --color-gold-light:     #FFC453;
+  --color-gold-glow:      rgba(250, 162, 27, 0.2);
+
+  /* Surface Colors (Dark Theme — Main) */
+  --color-bg:             #0B1623;
+  --color-bg-alt:         #0F1E30;
+  --color-surface:        #162436;
+  --color-surface-2:      #1C2F45;
+  --color-surface-3:      #213551;
+  --color-border:         rgba(255, 255, 255, 0.08);
+  --color-border-active:  rgba(250, 162, 27, 0.4);
+
+  /* Surface Colors (Light Theme — Forms/Cards) */
+  --color-light-bg:       #F4F6FA;
+  --color-light-surface:  #FFFFFF;
+  --color-light-border:   #E2E8F0;
+  --color-light-text:     #1A2332;
+
+  /* Text */
+  --color-text-primary:   #FFFFFF;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted:     #5A7090;
+  --color-text-inverse:   #1A2332;
+
+  /* Status Colors */
+  --color-success:        #22C55E;
+  --color-success-bg:     rgba(34, 197, 94, 0.12);
+  --color-warning:        #F59E0B;
+  --color-warning-bg:     rgba(245, 158, 11, 0.12);
+  --color-danger:         #EF4444;
+  --color-danger-bg:      rgba(239, 68, 68, 0.12);
+  --color-info:           #3B82F6;
+  --color-info-bg:        rgba(59, 130, 246, 0.12);
+
+  /* Typography */
+  --font-heading:         'Montserrat', sans-serif;
+  --font-body:            'Inter', sans-serif;
+  --font-display:         'Playfair Display', serif;
+
+  /* Font Sizes (fluid via clamp) */
+  --text-xs:    clamp(0.65rem,  1.5vw, 0.75rem);
+  --text-sm:    clamp(0.8rem,   2vw,   0.875rem);
+  --text-base:  clamp(0.9rem,   2.2vw, 1rem);
+  --text-md:    clamp(1rem,     2.5vw, 1.125rem);
+  --text-lg:    clamp(1.1rem,   3vw,   1.25rem);
+  --text-xl:    clamp(1.25rem,  3.5vw, 1.5rem);
+  --text-2xl:   clamp(1.5rem,   4vw,   2rem);
+  --text-3xl:   clamp(1.875rem, 4.5vw, 2.5rem);
+  --text-4xl:   clamp(2.25rem,  5vw,   3.25rem);
+  --text-hero:  clamp(2.5rem,   7vw,   4.5rem);
+
+  /* Spacing */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Border Radius */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-2xl:  32px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md:   0 4px 12px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.2);
+  --shadow-lg:   0 10px 30px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.25);
+  --shadow-xl:   0 20px 60px rgba(0,0,0,0.5), 0 8px 20px rgba(0,0,0,0.3);
+  --shadow-red:  0 8px 30px rgba(192,39,45,0.4);
+  --shadow-gold: 0 8px 30px rgba(250,162,27,0.35);
+
+  /* Transitions */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base:   250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-index Scale */
+  --z-base:    1;
+  --z-dropdown: 100;
+  --z-sticky:  200;
+  --z-overlay: 300;
+  --z-modal:   400;
+  --z-toast:   500;
+  --z-tooltip: 600;
+
+  /* Nav */
+  --nav-height: 64px;
+  --bottom-nav-height: 68px;
+}
+
+/* ----------------------------------------------------------
+   2. CSS RESET & BASE
+   ---------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, video, svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------------
+   3. TYPOGRAPHY SCALE
+   ---------------------------------------------------------- */
+.text-xs    { font-size: var(--text-xs); }
+.text-sm    { font-size: var(--text-sm); }
+.text-base  { font-size: var(--text-base); }
+.text-md    { font-size: var(--text-md); }
+.text-lg    { font-size: var(--text-lg); }
+.text-xl    { font-size: var(--text-xl); }
+.text-2xl   { font-size: var(--text-2xl); }
+.text-3xl   { font-size: var(--text-3xl); }
+.text-4xl   { font-size: var(--text-4xl); }
+
+.font-light    { font-weight: 300; }
+.font-regular  { font-weight: 400; }
+.font-medium   { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold     { font-weight: 700; }
+.font-black    { font-weight: 900; }
+
+.font-heading  { font-family: var(--font-heading); }
+.font-body     { font-family: var(--font-body); }
+.font-display  { font-family: var(--font-display); }
+
+.text-primary   { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted     { color: var(--color-text-muted); }
+.text-red       { color: var(--color-primary); }
+.text-gold      { color: var(--color-gold); }
+.text-success   { color: var(--color-success); }
+.text-danger    { color: var(--color-danger); }
+.text-warning   { color: var(--color-warning); }
+
+.text-center { text-align: center; }
+.text-left   { text-align: left; }
+.text-right  { text-align: right; }
+
+.uppercase { text-transform: uppercase; }
+.tracking-wide { letter-spacing: 0.08em; }
+.tracking-wider { letter-spacing: 0.12em; }
+
+/* ----------------------------------------------------------
+   4. GLASS MORPHISM EFFECTS
+   ---------------------------------------------------------- */
+.glass {
+  background: rgba(22, 36, 54, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--color-border);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-dark {
+  background: rgba(11, 22, 35, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ----------------------------------------------------------
+   5. GRADIENT UTILITIES
+   ---------------------------------------------------------- */
+.gradient-red {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(
+    135deg,
+    #0B1623 0%,
+    #0F1E30 40%,
+    #1a0d0d 100%
+  );
+}
+
+.gradient-dark {
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-alt) 100%);
+}
+
+.text-gradient-red {
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ----------------------------------------------------------
+   6. DISPLAY UTILITIES
+   ---------------------------------------------------------- */
+.hidden   { display: none !important; }
+.block    { display: block; }
+.flex     { display: flex; }
+.grid     { display: grid; }
+.inline   { display: inline; }
+.inline-flex { display: inline-flex; }
+
+.flex-col     { flex-direction: column; }
+.flex-row     { flex-direction: row; }
+.flex-wrap    { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.items-start  { align-items: flex-start; }
+.items-end    { align-items: flex-end; }
+.justify-center  { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end     { justify-content: flex-end; }
+.flex-1       { flex: 1; }
+.gap-1  { gap: var(--space-1); }
+.gap-2  { gap: var(--space-2); }
+.gap-3  { gap: var(--space-3); }
+.gap-4  { gap: var(--space-4); }
+.gap-6  { gap: var(--space-6); }
+.gap-8  { gap: var(--space-8); }
+
+/* ----------------------------------------------------------
+   7. SPACING UTILITIES
+   ---------------------------------------------------------- */
+.p-2  { padding: var(--space-2); }
+.p-3  { padding: var(--space-3); }
+.p-4  { padding: var(--space-4); }
+.p-6  { padding: var(--space-6); }
+.p-8  { padding: var(--space-8); }
+.px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+.px-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
+.py-2 { padding-top: var(--space-2); padding-bottom: var(--space-2); }
+.py-3 { padding-top: var(--space-3); padding-bottom: var(--space-3); }
+.py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.py-8 { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+
+.mt-2  { margin-top: var(--space-2); }
+.mt-4  { margin-top: var(--space-4); }
+.mt-6  { margin-top: var(--space-6); }
+.mt-8  { margin-top: var(--space-8); }
+.mb-2  { margin-bottom: var(--space-2); }
+.mb-4  { margin-bottom: var(--space-4); }
+.mb-6  { margin-bottom: var(--space-6); }
+.mb-8  { margin-bottom: var(--space-8); }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* ----------------------------------------------------------
+   8. BORDER UTILITIES
+   ---------------------------------------------------------- */
+.rounded-sm   { border-radius: var(--radius-sm); }
+.rounded-md   { border-radius: var(--radius-md); }
+.rounded-lg   { border-radius: var(--radius-lg); }
+.rounded-xl   { border-radius: var(--radius-xl); }
+.rounded-2xl  { border-radius: var(--radius-2xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+.border       { border: 1px solid var(--color-border); }
+.border-gold  { border: 1px solid var(--color-border-active); }
+
+/* ----------------------------------------------------------
+   9. OVERFLOW & POSITION UTILITIES
+   ---------------------------------------------------------- */
+.overflow-hidden { overflow: hidden; }
+.relative        { position: relative; }
+.absolute        { position: absolute; }
+.fixed           { position: fixed; }
+.sticky          { position: sticky; }
+.inset-0         { top: 0; left: 0; right: 0; bottom: 0; }
+.w-full          { width: 100%; }
+.h-full          { height: 100%; }
+.min-h-screen    { min-height: 100vh; min-height: 100dvh; }
+
+/* ----------------------------------------------------------
+   10. RESPONSIVE VISIBILITY
+   ---------------------------------------------------------- */
+@media (max-width: 639px) {
+  .hide-mobile { display: none !important; }
+}
+@media (min-width: 640px) {
+  .show-mobile-only { display: none !important; }
+}
+@media (max-width: 1023px) {
+  .hide-tablet { display: none !important; }
+}
+@media (min-width: 1024px) {
+  .hide-desktop { display: none !important; }
+}
