@@ -36,7 +36,7 @@ export async function renderCertificate(params) {
           <!-- Header -->
           <div style="text-align:center;margin-bottom:var(--space-8)" class="animate-fadeInDown">
             <div style="font-size:4rem;margin-bottom:var(--space-3)">🏆</div>
-            <div class="section-label" style="justify-content:center">Oslo Liftutleie · Typeopplæring.no</div>
+            <div class="section-label" style="justify-content:center">Oslo Liftutleie · Sikkerhet & Opplæring</div>
             <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:900;margin-bottom:var(--space-2)">${t('cert.title')}</h1>
             <p style="color:var(--color-text-secondary)">${t('cert.subtitle')}</p>
           </div>
@@ -126,10 +126,10 @@ function renderCertificateTemplate(cert, equipment, certDate, eqName, verifyUrl,
         <!-- Header Row -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem">
           <div style="display:flex;align-items:center;gap:0.875rem">
-            <div style="width:48px;height:48px;background:linear-gradient(135deg,#C0272D,#8B1A1E);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:900;font-size:1rem;color:#fff;box-shadow:0 4px 16px rgba(192,39,45,0.4)">OL</div>
+            <div style="width:48px;height:48px;background:linear-gradient(135deg,#C0272D,#8B1A1E);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:900;font-size:1rem;color:#fff;box-shadow:0 4px 16px rgba(192,39,45,0.4)">🏗️</div>
             <div>
               <div style="font-family:var(--font-heading);font-weight:800;font-size:0.85rem;color:#fff;letter-spacing:-0.01em">Oslo Liftutleie</div>
-              <div style="font-size:0.6rem;color:rgba(250,162,27,0.8);letter-spacing:0.12em;text-transform:uppercase">Typeopplæring.no</div>
+              <div style="font-size:0.6rem;color:rgba(250,162,27,0.8);letter-spacing:0.12em;text-transform:uppercase">Sikkerhet & Opplæring</div>
             </div>
           </div>
           <div style="text-align:right">
@@ -303,9 +303,9 @@ export async function renderVerify(params) {
 
           <!-- Logo -->
           <div style="text-align:center;margin-bottom:var(--space-8)">
-            <div class="nav-logo-mark" style="width:56px;height:56px;font-size:1.2rem;margin:0 auto var(--space-4)">OL</div>
+            <div class="nav-logo-mark" style="width:56px;height:56px;font-size:1.2rem;margin:0 auto var(--space-4)">🏗️</div>
             <h1 style="font-family:var(--font-heading);font-size:var(--text-2xl);font-weight:800;margin-bottom:0.5rem">Diplom-verifikasjon</h1>
-            <p style="color:var(--color-text-secondary);font-size:var(--text-sm)">Typeopplæring.no · Oslo Liftutleie</p>
+            <p style="color:var(--color-text-secondary);font-size:var(--text-sm)">Oslo Liftutleie · Sikkerhet & Opplæring</p>
           </div>
 
           ${found && cert ? `
@@ -381,7 +381,7 @@ export async function renderCV(params) {
             <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:900;margin-bottom:var(--space-2)">${name}</h1>
             ${user?.company ? `<p style="color:var(--color-gold);font-weight:600;margin-bottom:var(--space-2)">${user.company}</p>` : ''}
             <p style="color:var(--color-text-muted);font-size:var(--text-sm)">
-              ${certs.length} typegodkjenning${certs.length !== 1 ? 'er' : ''} · Typeopplæring.no
+              ${certs.length} typegodkjenning${certs.length !== 1 ? 'er' : ''} · Sikkerhet & Opplæring
             </p>
             <div style="margin-top:var(--space-5);display:flex;gap:var(--space-3);justify-content:center;flex-wrap:wrap">
               <button class="btn btn-ghost btn-sm" id="copy-cv-link">📋 Kopier CV-lenke</button>

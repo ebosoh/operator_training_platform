@@ -135,7 +135,7 @@ self.addEventListener('push', event => {
   if (!event.data) return;
   const data = event.data.json();
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Typeopplæring.no', {
+    self.registration.showNotification(data.title || 'Oslo Liftutleie', {
       body: data.body || 'Du har en ny varsling',
       icon: './icon-192.png',
       badge: './icon-96.png',

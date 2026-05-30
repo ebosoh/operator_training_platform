@@ -389,10 +389,10 @@ function renderHomeView() {
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:var(--space-8);margin-bottom:var(--space-8)" class="grid-cols-1 grid-cols-4">
           <div>
             <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
-              <div class="nav-logo-mark">OL</div>
+              <div class="nav-logo-mark">🏗️</div>
               <div>
-                <div class="nav-logo-name">Typeopplæring.no</div>
-                <div class="nav-logo-tag">Oslo Liftutleie</div>
+                <div class="nav-logo-name">Oslo Liftutleie</div>
+                <div class="nav-logo-tag">Sikkerhet & Opplæring</div>
               </div>
             </div>
             <p style="color:var(--color-text-muted);font-size:var(--text-sm);line-height:1.7;max-width:280px">
@@ -414,7 +414,7 @@ function renderHomeView() {
         </div>
         <div class="divider"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
-          <p style="color:var(--color-text-muted);font-size:var(--text-xs)">© 2024 Oslo Liftutleie AS. Alle rettigheter reservert. · Org.nr: 123 456 789 · Typeopplæring.no</p>
+          <p style="color:var(--color-text-muted);font-size:var(--text-xs)">© 2024 Oslo Liftutleie AS. Alle rettigheter reservert. · Org.nr: 123 456 789 · Sikkerhet & Opplæring</p>
           <div style="display:flex;gap:1rem">
             ${['🇳🇴 Norsk', 'GDPR', 'Personvern'].map(l => `<span style="color:var(--color-text-muted);font-size:var(--text-xs)">${l}</span>`).join('<span style="color:var(--color-border)">·</span>')}
           </div>
@@ -513,10 +513,10 @@ const App = {
       <nav class="top-nav" id="top-nav">
         <div class="nav-inner">
           <a href="#/" class="nav-logo" id="nav-logo">
-            <div class="nav-logo-mark">OL</div>
+            <div class="nav-logo-mark">🏗️</div>
             <div class="nav-logo-text hide-mobile">
-              <span class="nav-logo-name">Typeopplæring.no</span>
-              <span class="nav-logo-tag">Oslo Liftutleie</span>
+              <span class="nav-logo-name">Oslo Liftutleie</span>
+              <span class="nav-logo-tag">Sikkerhet & Opplæring</span>
             </div>
           </a>
 
@@ -575,8 +575,8 @@ const App = {
       <div class="drawer" id="side-drawer">
         <div class="drawer-header">
           <div style="display:flex;align-items:center;gap:0.75rem">
-            <div class="nav-logo-mark" style="width:32px;height:32px;font-size:0.75rem">OL</div>
-            <span style="font-size:var(--text-sm);font-weight:700">Typeopplæring.no</span>
+            <div class="nav-logo-mark" style="width:32px;height:32px;font-size:0.75rem">🏗️</div>
+            <span style="font-size:var(--text-sm);font-weight:700">Oslo Liftutleie</span>
           </div>
           <div class="drawer-close" onclick="window.__app?.closeDrawer()">✕</div>
         </div>

@@ -57,8 +57,8 @@ const translations = {
     'auth.forgot.sent':     'E-post sendt! Sjekk innboksen din.',
 
     // ── Home / Hero ──────────────────────────────────────────
-    'home.hero.tag':         'Typeopplæring.no',
-    'home.hero.title':       'Sertifiser deg i\nTypeopplæring',
+    'home.hero.tag':         'Oslo Liftutleie',
+    'home.hero.title':       'Sertifiser deg i\nSikkerhet & Opplæring',
     'home.hero.subtitle':    'Digital sikkerhetsopplæring for tungt maskineri — raskt, lovlig og anerkjent av Oslo Liftutleie.',
     'home.hero.cta':         'Start opplæring',
     'home.hero.cta2':        'Se maskinkataloget',
@@ -276,8 +276,8 @@ const translations = {
     'auth.forgot.sent':     'Email sent! Check your inbox.',
 
     // ── Home / Hero ──────────────────────────────────────────
-    'home.hero.tag':         'Typeopplæring.no',
-    'home.hero.title':       'Get Certified in\nType Approval',
+    'home.hero.tag':         'Oslo Liftutleie',
+    'home.hero.title':       'Get Certified in\nSafety & Training',
     'home.hero.subtitle':    'Digital safety training for heavy machinery — fast, legal, and recognized by Oslo Liftutleie.',
     'home.hero.cta':         'Start Training',
     'home.hero.cta2':        'Browse Machines',

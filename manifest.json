@@ -1,6 +1,6 @@
 {
-  "name": "Typeopplæring.no — Oslo Liftutleie",
-  "short_name": "Typeopplæring",
+  "name": "Oslo Liftutleie — Sikkerhet & Opplæring",
+  "short_name": "Oslo Liftutleie",
   "description": "Digital sikkerhetsopplæring og typegodkjenning for tungt maskineri",
   "start_url": "./index.html",
   "display": "standalone",

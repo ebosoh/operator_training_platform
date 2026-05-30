@@ -62,7 +62,7 @@ export function renderLogin() {
         <div class="hero-bg" style="position:absolute;inset:0;background-image:url('hero_bg.png');background-size:cover;background-position:center;filter:brightness(0.25)"></div>
         <div style="position:relative;z-index:1;padding:3rem;display:flex;flex-direction:column;justify-content:space-between;height:100%">
           <div>
-            <div class="nav-logo-mark" style="width:56px;height:56px;font-size:1.2rem;margin-bottom:1.5rem">OL</div>
+            <div class="nav-logo-mark" style="width:56px;height:56px;font-size:1.2rem;margin-bottom:1.5rem">🏗️</div>
             <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:800;line-height:1.15;color:white;margin-bottom:1rem">
               Trygg opplæring.<br>
               <span class="text-gradient-gold">Overalt.</span>
@@ -95,7 +95,7 @@ export function renderLogin() {
             </div>
           </div>
           <div style="color:var(--color-text-muted);font-size:var(--text-xs)">
-            © 2024 Oslo Liftutleie AS · Typeopplæring.no
+            © 2024 Oslo Liftutleie AS · Sikkerhet & Opplæring
           </div>
         </div>
       </div>
@@ -105,10 +105,10 @@ export function renderLogin() {
         <div class="auth-card animate-fadeInUp">
           <!-- Logo (mobile only) -->
           <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:2.5rem" class="show-mobile-only hide-desktop">
-            <div class="nav-logo-mark">OL</div>
+            <div class="nav-logo-mark">🏗️</div>
             <div>
-              <div class="nav-logo-name">Typeopplæring.no</div>
-              <div class="nav-logo-tag">Oslo Liftutleie</div>
+              <div class="nav-logo-name">Oslo Liftutleie</div>
+              <div class="nav-logo-tag">Sikkerhet & Opplæring</div>
             </div>
           </div>
 
@@ -184,7 +184,7 @@ export function renderRegister() {
       <div class="auth-panel-left">
         <div style="position:absolute;inset:0;background-image:url('hero_bg.png');background-size:cover;background-position:center;filter:brightness(0.2)"></div>
         <div style="position:relative;z-index:1;padding:3rem;display:flex;flex-direction:column;justify-content:center;height:100%;gap:2rem">
-          <div class="nav-logo-mark" style="width:56px;height:56px;font-size:1.2rem">OL</div>
+          <div class="nav-logo-mark" style="width:56px;height:56px;font-size:1.2rem">🏗️</div>
           <div>
             <div class="section-label" style="margin-bottom:1rem">299 NOK per godkjenning</div>
             <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:800;color:white;margin-bottom:1rem">Din karriere.<br><span class="text-gradient-gold">Din dokumentasjon.</span></h1>
@@ -203,8 +203,8 @@ export function renderRegister() {
       <div class="auth-panel-right" style="padding-top:2rem;padding-bottom:2rem">
         <div class="auth-card animate-fadeInUp" style="max-width:480px">
           <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem" class="show-mobile-only hide-desktop">
-            <div class="nav-logo-mark">OL</div>
-            <div class="nav-logo-name">Typeopplæring.no</div>
+            <div class="nav-logo-mark">🏗️</div>
+            <div class="nav-logo-name">Oslo Liftutleie</div>
           </div>
 
           <h2 style="font-family:var(--font-heading);font-size:var(--text-2xl);font-weight:800;margin-bottom:0.375rem">${t('auth.register.title')}</h2>
@@ -357,7 +357,7 @@ export function renderForgotPassword() {
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:var(--color-bg)">
       <div style="width:100%;max-width:420px" class="animate-scaleIn">
         <div style="text-align:center;margin-bottom:2rem">
-          <div class="nav-logo-mark" style="width:56px;height:56px;font-size:1.2rem;margin:0 auto 1rem">OL</div>
+          <div class="nav-logo-mark" style="width:56px;height:56px;font-size:1.2rem;margin:0 auto 1rem">🏗️</div>
           <h2 style="font-family:var(--font-heading);font-size:var(--text-2xl);font-weight:800;margin-bottom:0.5rem">${t('auth.forgot.title')}</h2>
           <p style="color:var(--color-text-secondary);font-size:var(--text-sm)">${t('auth.forgot.subtitle')}</p>
         </div>
