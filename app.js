@@ -601,8 +601,9 @@ const App = {
     if (authArea) {
       if (isLoggedIn && user) {
         authArea.innerHTML = `
-          <div style="display:flex;align-items:center;gap:0.5rem">
-            <a href="#/profile" class="nav-avatar" title="${user.name}">${user.avatar || I18n.t ? user.name?.slice(0,2).toUpperCase() : '??'}</a>
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <a href="#/profile" class="nav-avatar" title="${user.name}">${user.avatar || user.name?.slice(0,2).toUpperCase()}</a>
+            <button onclick="window.__app?.logout()" class="btn btn-ghost btn-sm hide-mobile" style="color:var(--color-danger);border-color:rgba(231,76,60,0.2);padding:0.4rem 0.8rem;font-size:var(--text-xs);font-weight:600">🚪 Logg ut</button>
           </div>`;
       } else {
         authArea.innerHTML = `
