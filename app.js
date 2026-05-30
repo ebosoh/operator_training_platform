@@ -546,9 +546,15 @@ const App = {
     this.renderShell();
     this.setupEventListeners();
 
-    // Register service worker
+    // Register service worker (only on production domain, bypass on localhost for instant developer updates)
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          for (let r of registrations) { r.unregister(); }
+        });
+      } else {
+        navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+      }
     }
 
     // Initial route

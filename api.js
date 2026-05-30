@@ -336,7 +336,7 @@ async function appsScriptRequest(action, payload = {}) {
   try {
     const res = await fetch(API_CONFIG.BASE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ action, ...payload }),
       signal: controller.signal,
     });
