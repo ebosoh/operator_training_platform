@@ -7,7 +7,7 @@
 import API, { MockData } from './api.js';
 import I18n from './i18n.js';
 import { Auth } from './auth.js';
-import { Toast, Store, scrollToTop, showConfetti } from './utils.js';
+import { Toast, Store, scrollToTop, launchConfetti } from './utils.js';
 
 export async function renderAdmin(params) {
   const t = (k) => I18n.t(k);
@@ -616,7 +616,7 @@ function initAdminHandlers(pendingList, equipmentList) {
 
         // Celebrate!
         if (signModal) signModal.style.display = 'none';
-        showConfetti();
+        launchConfetti();
         Toast.success(`Sertifikat ${cert.certNumber} er utstedt! E-post sendt til operatør.`, 'Sertifisert');
         
         // Reload admin to update pending badge and lists
