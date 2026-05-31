@@ -220,10 +220,12 @@ export async function renderAdmin(params) {
                           <td>${eq.category}</td>
                           <td>${eq.subcategory}</td>
                           <td><span class="badge badge-gold">${eq.workHeight || 'N/A'}</span></td>
-                          <td><strong>299 NOK</strong></td>
+                          <td><strong>${(eq.price / 100 || 299)} NOK</strong></td>
                           <td>📄 ${eq.manualPages} s</td>
-                          <td style="text-align:right">
-                            <a href="#/equipment/${eq.id}" class="btn btn-ghost btn-xs" style="padding:0.2rem 0.4rem">Vis</a>
+                          <td style="text-align:right;white-space:nowrap">
+                            <a href="#/equipment/${eq.id}" class="btn btn-ghost btn-xs" style="padding:0.2rem 0.4rem;display:inline-block">Vis</a>
+                            <button class="btn btn-gold btn-xs admin-edit-eq-btn" data-id="${eq.id}" style="padding:0.2rem 0.4rem;margin-left:0.25rem">✏️ Endre</button>
+                            <button class="btn btn-primary btn-xs admin-delete-eq-btn" data-id="${eq.id}" style="padding:0.2rem 0.4rem;margin-left:0.25rem;background:var(--color-danger);border-color:transparent">🗑️ Slett</button>
                           </td>
                         </tr>
                       `).join('')}
@@ -322,10 +324,10 @@ export async function renderAdmin(params) {
       <div class="modal-overlay" id="admin-add-eq-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;padding:var(--space-4)">
         <div class="modal card" style="width:100%;max-width:550px;overflow:visible">
           <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
-            <h3 style="font-family:var(--font-heading);font-weight:800;margin:0">Legg til ny maskin i flåten</h3>
+            <h3 style="font-family:var(--font-heading);font-weight:800;margin:0" id="add-eq-modal-title">Legg til ny maskin i flåten</h3>
             <span style="cursor:pointer;font-size:1.5rem" id="close-add-eq-modal-btn">✕</span>
           </div>
-          <form class="card-body" style="padding:var(--space-5);display:grid;grid-template-columns:1fr 1fr;gap:0.75rem" id="add-eq-form">
+          <form class="card-body" style="padding:var(--space-5);display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;max-height:75dvh;overflow-y:auto" id="add-eq-form">
             <div class="form-group" style="grid-column: span 2">
               <label class="form-label" style="font-size:var(--text-xs)">Maskinnavn (Norsk)</label>
               <input type="text" id="add-eq-name-no" class="form-input" placeholder="e.g. Sakselifter 12m Diesel" required />
@@ -362,14 +364,43 @@ export async function renderAdmin(params) {
               <label class="form-label" style="font-size:var(--text-xs)">Unik QR-kode</label>
               <input type="text" id="add-eq-qr" class="form-input" placeholder="e.g. OL-EQ-SAKS-002" required />
             </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size:var(--text-xs)">YouTube Video ID</label>
+              <input type="text" id="add-eq-videoid" class="form-input" placeholder="e.g. dQw4w9WgXcQ" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size:var(--text-xs)">Kurspris (NOK)</label>
+              <input type="number" id="add-eq-price" class="form-input" value="299" required />
+            </div>
+            <div class="form-group" style="grid-column: span 2">
+              <label class="form-label" style="font-size:var(--text-xs)">Håndbok Beskrivelse (Norsk)</label>
+              <textarea id="add-eq-desc-no" class="form-input" style="height:60px;resize:vertical" placeholder="Skriv beskrivelse på norsk..."></textarea>
+            </div>
+            <div class="form-group" style="grid-column: span 2">
+              <label class="form-label" style="font-size:var(--text-xs)">Håndbok Beskrivelse (Engelsk)</label>
+              <textarea id="add-eq-desc-en" class="form-input" style="height:60px;resize:vertical" placeholder="Write description in English..."></textarea>
+            </div>
             <div class="form-group" style="grid-column: span 2">
               <label class="form-label" style="font-size:var(--text-xs)">Foto (Unsplash URL)</label>
               <input type="url" id="add-eq-image" class="form-input" placeholder="https://..." value="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70" />
             </div>
 
+            <!-- Dynamic Manual Sections Builder -->
+            <div style="grid-column: span 2;border-top:1px dashed var(--color-border);margin:var(--space-3) 0;padding-top:var(--space-3)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3)">
+                <h4 style="font-family:var(--font-heading);font-weight:700;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:0.05em;color:var(--color-gold);margin:0">
+                  📚 Egendefinerte Håndbokavsnitt (Valgfritt)
+                </h4>
+                <button type="button" class="btn btn-ghost btn-xs" id="add-manual-sec-btn" style="padding:0.2rem 0.5rem">
+                  ➕ Legg til avsnitt
+                </button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.75rem" id="form-manual-sections-container"></div>
+            </div>
+
             <div style="grid-column: span 2;display:flex;gap:0.5rem;margin-top:var(--space-4)">
               <button type="button" class="btn btn-ghost" id="cancel-add-eq-btn" style="flex:1">Avbryt</button>
-              <button type="submit" class="btn btn-primary hover-glow-red" style="flex:1">Lagre maskin</button>
+              <button type="submit" class="btn btn-primary hover-glow-red" id="submit-eq-form-btn" style="flex:1">Lagre maskin</button>
             </div>
           </form>
         </div>
@@ -473,8 +504,55 @@ function initAdminHandlers(pendingList, equipmentList) {
   const cancelAddEqBtn = document.getElementById('cancel-add-eq-btn');
   const addEqForm = document.getElementById('add-eq-form');
 
+  const manualSectionsContainer = document.getElementById('form-manual-sections-container');
+  const addManualSecBtn = document.getElementById('add-manual-sec-btn');
+
+  let activeEditId = null;
+
+  function renderManualSectionRow(sec = { titleNo: '', titleEn: '', contentNo: '', contentEn: '' }) {
+    if (!manualSectionsContainer) return;
+    const row = document.createElement('div');
+    row.className = 'form-manual-sec-row glass-light';
+    row.style = 'padding:0.75rem;border-radius:var(--radius-md);border:1px solid var(--color-border);display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;position:relative;margin-bottom:0.5rem';
+    row.innerHTML = `
+      <span class="remove-manual-sec-btn" style="position:absolute;top:0.35rem;right:0.5rem;cursor:pointer;font-size:var(--text-xs);color:var(--color-danger);font-weight:700" title="Fjern avsnitt">✕</span>
+      <div style="grid-column: span 2;height:var(--space-2)"></div>
+      <div class="form-group">
+        <label class="form-label" style="font-size:var(--text-xxs)">Avsnittstittel (Norsk)</label>
+        <input type="text" class="form-input manual-sec-title-no" placeholder="e.g. 1. Sikkerhetskontroll" value="${sec.titleNo || ''}" required style="padding:4px 8px;font-size:var(--text-xs)" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="font-size:var(--text-xxs)">Avsnittstittel (Engelsk)</label>
+        <input type="text" class="form-input manual-sec-title-en" placeholder="e.g. 1. Safety Check" value="${sec.titleEn || ''}" required style="padding:4px 8px;font-size:var(--text-xs)" />
+      </div>
+      <div class="form-group" style="grid-column: span 2">
+        <label class="form-label" style="font-size:var(--text-xxs)">Innhold (Norsk)</label>
+        <textarea class="form-input manual-sec-content-no" placeholder="HTML eller ren tekst..." required style="height:50px;padding:4px 8px;font-size:var(--text-xs);resize:vertical">${sec.contentNo || ''}</textarea>
+      </div>
+      <div class="form-group" style="grid-column: span 2">
+        <label class="form-label" style="font-size:var(--text-xxs)">Innhold (Engelsk)</label>
+        <textarea class="form-input manual-sec-content-en" placeholder="HTML or plain text..." required style="height:50px;padding:4px 8px;font-size:var(--text-xs);resize:vertical">${sec.contentEn || ''}</textarea>
+      </div>
+    `;
+    row.querySelector('.remove-manual-sec-btn').addEventListener('click', () => {
+      row.remove();
+    });
+    manualSectionsContainer.appendChild(row);
+  }
+
+  if (addManualSecBtn) {
+    addManualSecBtn.addEventListener('click', () => {
+      renderManualSectionRow();
+    });
+  }
+
   if (addEqBtn) {
     addEqBtn.addEventListener('click', () => {
+      activeEditId = null;
+      document.getElementById('add-eq-modal-title').textContent = lang === 'no' ? 'Legg til ny maskin i flåten' : 'Add New Machine to Fleet';
+      document.getElementById('submit-eq-form-btn').textContent = lang === 'no' ? 'Lagre maskin' : 'Save Machine';
+      if (addEqForm) addEqForm.reset();
+      if (manualSectionsContainer) manualSectionsContainer.innerHTML = '';
       if (addEqModal) {
         addEqModal.style.display = 'flex';
         requestAnimationFrame(() => addEqModal.classList.add('open'));
@@ -486,6 +564,11 @@ function initAdminHandlers(pendingList, equipmentList) {
   const headerAddBtn = document.getElementById('admin-header-add-eq-btn');
   if (headerAddBtn) {
     headerAddBtn.addEventListener('click', () => {
+      activeEditId = null;
+      document.getElementById('add-eq-modal-title').textContent = lang === 'no' ? 'Legg til ny maskin i flåten' : 'Add New Machine to Fleet';
+      document.getElementById('submit-eq-form-btn').textContent = lang === 'no' ? 'Lagre maskin' : 'Save Machine';
+      if (addEqForm) addEqForm.reset();
+      if (manualSectionsContainer) manualSectionsContainer.innerHTML = '';
       if (addEqModal) {
         addEqModal.style.display = 'flex';
         requestAnimationFrame(() => addEqModal.classList.add('open'));
@@ -493,6 +576,78 @@ function initAdminHandlers(pendingList, equipmentList) {
       }
     });
   }
+
+  // Edit machine handler
+  document.querySelectorAll('.admin-edit-eq-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const eqId = btn.dataset.id;
+      const eq = equipmentList.find(e => e.id === eqId);
+      if (!eq) return;
+
+      activeEditId = eqId;
+      document.getElementById('add-eq-modal-title').textContent = lang === 'no' ? 'Rediger maskin / kurs' : 'Edit Machine / Course';
+      document.getElementById('submit-eq-form-btn').textContent = lang === 'no' ? 'Oppdater maskin' : 'Update Machine';
+
+      // Pre-populate fields
+      document.getElementById('add-eq-name-no').value = eq.nameNo || '';
+      document.getElementById('add-eq-name-en').value = eq.name || '';
+      document.getElementById('add-eq-cat').value = eq.category || 'Lifter';
+      document.getElementById('add-eq-subcat').value = eq.subcategory || '';
+      document.getElementById('add-eq-height').value = eq.workHeight || '';
+      document.getElementById('add-eq-weight').value = eq.weight || '';
+      document.getElementById('add-eq-pages').value = eq.manualPages || 48;
+      document.getElementById('add-eq-qr').value = eq.qrCode || '';
+      document.getElementById('add-eq-videoid').value = eq.videoId || '';
+      document.getElementById('add-eq-price').value = eq.price ? (eq.price / 100) : 299;
+      document.getElementById('add-eq-desc-no').value = eq.description || '';
+      document.getElementById('add-eq-desc-en').value = eq.descriptionEn || '';
+      document.getElementById('add-eq-image').value = eq.image || '';
+
+      // Pre-populate manual sections
+      if (manualSectionsContainer) {
+        manualSectionsContainer.innerHTML = '';
+        if (eq.manualSections && eq.manualSections.length > 0) {
+          eq.manualSections.forEach(sec => renderManualSectionRow(sec));
+        }
+      }
+
+      // Show modal
+      if (addEqModal) {
+        addEqModal.style.display = 'flex';
+        requestAnimationFrame(() => addEqModal.classList.add('open'));
+        document.body.style.overflow = 'hidden';
+      }
+    });
+  });
+
+  // Delete machine handler
+  document.querySelectorAll('.admin-delete-eq-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const eqId = btn.dataset.id;
+      const eq = equipmentList.find(e => e.id === eqId);
+      if (!eq) return;
+
+      const confirmMsg = lang === 'no' 
+        ? `Er du sikker på at du vil slette "${eq.nameNo}" og dens tilhørende kurs? Historiske HMS-diplomer vil bli bevart, men kurset vil bli slettet for fremtidige brukere.`
+        : `Are you sure you want to delete "${eq.name}" and its course? Historical certificates will be preserved, but the course will be removed from the catalog.`;
+
+      if (confirm(confirmMsg)) {
+        try {
+          Toast.info(lang === 'no' ? 'Sletter maskin...' : 'Deleting machine...');
+          API.deleteEquipment(eqId).then(() => {
+            Toast.success(lang === 'no' ? 'Maskinen har blitt slettet!' : 'Machine has been deleted!', lang === 'no' ? 'Slettet' : 'Deleted');
+            setTimeout(() => {
+              window.location.reload();
+            }, 800);
+          }).catch(err => {
+            Toast.error('Kunne ikke slette: ' + err.message, 'Feil');
+          });
+        } catch (err) {
+          Toast.error('Kunne ikke slette: ' + err.message, 'Feil');
+        }
+      }
+    });
+  });
 
   function closeAddEqModal() {
     if (addEqModal) {
@@ -519,6 +674,10 @@ function initAdminHandlers(pendingList, equipmentList) {
       const weight = document.getElementById('add-eq-weight').value.trim();
       const manualPages = parseInt(document.getElementById('add-eq-pages').value) || 48;
       const qrCode = document.getElementById('add-eq-qr').value.trim();
+      const videoId = document.getElementById('add-eq-videoid').value.trim() || null;
+      const price = (parseInt(document.getElementById('add-eq-price').value) || 299) * 100;
+      const description = document.getElementById('add-eq-desc-no').value.trim();
+      const descriptionEn = document.getElementById('add-eq-desc-en').value.trim();
       const image = document.getElementById('add-eq-image').value.trim();
 
       // Sanitize Unsplash page URLs to direct image hotlinks
@@ -533,23 +692,44 @@ function initAdminHandlers(pendingList, equipmentList) {
         }
       }
 
-      const newEq = {
-        id: `EQ-${subcategory.substring(0,4).toUpperCase()}-${Date.now()}`,
+      // Compile dynamic manual sections
+      const manualSections = [];
+      document.querySelectorAll('.form-manual-sec-row').forEach(row => {
+        const tNo = row.querySelector('.manual-sec-title-no').value.trim();
+        const tEn = row.querySelector('.manual-sec-title-en').value.trim();
+        const cNo = row.querySelector('.manual-sec-content-no').value.trim();
+        const cEn = row.querySelector('.manual-sec-content-en').value.trim();
+        if (tNo || tEn) {
+          manualSections.push({ titleNo: tNo, titleEn: tEn, contentNo: cNo, contentEn: cEn });
+        }
+      });
+
+      const eqData = {
         name: nameEn, nameNo,
         category, subcategory,
         workHeight, weight,
         image: finalImageUrl, manualPages,
-        price: 29900, currency: 'NOK',
-        videoId: null,
-        description: `${nameNo} for profesjonell bruk. Typeopplæring og sikkerhetskontroll tilgjengelig.`,
-        descriptionEn: `${nameEn} for professional use. Type approval training and safety control available.`,
+        price, currency: 'NOK',
+        videoId,
+        description: description || `${nameNo} for profesjonell bruk. Typeopplæring og sikkerhetskontroll tilgjengelig.`,
+        descriptionEn: descriptionEn || `${nameEn} for professional use. Type approval training and safety control available.`,
         qrCode,
+        manualSections,
         tags: [category.toLowerCase(), subcategory.toLowerCase()]
       };
 
       try {
-        await API.addEquipment(newEq);
-        Toast.success(`${nameNo} har blitt lagt til i maskinlisten!`, 'Maskin opprettet');
+        if (activeEditId) {
+          // Edit branch
+          eqData.id = activeEditId;
+          await API.updateEquipment(activeEditId, eqData);
+          Toast.success(`${nameNo} har blitt oppdatert!`, 'Maskin oppdatert');
+        } else {
+          // Create branch
+          eqData.id = `EQ-${subcategory.substring(0,4).toUpperCase()}-${Date.now()}`;
+          await API.addEquipment(eqData);
+          Toast.success(`${nameNo} har blitt lagt til i maskinlisten!`, 'Maskin opprettet');
+        }
         closeAddEqModal();
 
         // Reload admin workspace after short delay to show new item
@@ -557,7 +737,7 @@ function initAdminHandlers(pendingList, equipmentList) {
           window.location.reload();
         }, 800);
       } catch (err) {
-        Toast.error('Kunne ikke lagre utstyret: ' + err.message, 'Feil');
+        Toast.error('Kunne ikke lagre maskin: ' + err.message, 'Feil');
       }
     });
   }

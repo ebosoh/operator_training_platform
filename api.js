@@ -514,7 +514,21 @@ const API = {
   async getEquipment(filters = {}) {
     if (API_CONFIG.USE_MOCK) {
       const added = Store.get('added_equipment', []);
-      let items = [...MockData.equipment, ...added];
+      const deleted = Store.get('deleted_equipment', []);
+      
+      // Override seed equipment with any updated versions from added list
+      let items = [...MockData.equipment];
+      added.forEach(add => {
+        const idx = items.findIndex(item => item.id === add.id);
+        if (idx !== -1) {
+          items[idx] = add;
+        } else {
+          items.push(add);
+        }
+      });
+
+      // Filter out deleted items
+      items = items.filter(e => !deleted.includes(e.id));
       
       if (filters.category && filters.category !== 'all') {
         items = items.filter(e => e.category === filters.category ||
@@ -537,7 +551,13 @@ const API = {
   async getEquipmentById(id) {
     if (API_CONFIG.USE_MOCK) {
       const added = Store.get('added_equipment', []);
-      const item = [...MockData.equipment, ...added].find(e => e.id === id);
+      const deleted = Store.get('deleted_equipment', []);
+      if (deleted.includes(id)) throw new Error('Equipment deleted');
+
+      // Check added first (updated seeds or new creations), then fallback to seed
+      let item = added.find(e => e.id === id);
+      if (!item) item = MockData.equipment.find(e => e.id === id);
+
       if (!item) throw new Error('Equipment not found');
       return mockDelay(item);
     }
@@ -547,8 +567,12 @@ const API = {
   async getEquipmentByQR(qrCode) {
     if (API_CONFIG.USE_MOCK) {
       const added = Store.get('added_equipment', []);
-      const item = [...MockData.equipment, ...added].find(e => e.qrCode === qrCode);
-      if (!item) throw new Error('Equipment not found for QR: ' + qrCode);
+      const deleted = Store.get('deleted_equipment', []);
+
+      let item = added.find(e => e.qrCode === qrCode);
+      if (!item) item = MockData.equipment.find(e => e.qrCode === qrCode);
+
+      if (!item || deleted.includes(item.id)) throw new Error('Equipment not found for QR: ' + qrCode);
       return mockDelay(item);
     }
     return appsScriptRequest('validateQR', { qrCode });
@@ -564,8 +588,55 @@ const API = {
     return appsScriptRequest('addEquipment', data);
   },
 
+  async updateEquipment(id, data) {
+    if (API_CONFIG.USE_MOCK) {
+      let added = Store.get('added_equipment', []);
+      const idx = added.findIndex(e => e.id === id);
+      if (idx !== -1) {
+        added[idx] = data;
+      } else {
+        added.push(data);
+      }
+      Store.set('added_equipment', added);
+      return mockDelay({ success: true });
+    }
+    return appsScriptRequest('updateEquipment', { id, ...data });
+  },
+
+  async deleteEquipment(id) {
+    if (API_CONFIG.USE_MOCK) {
+      let added = Store.get('added_equipment', []);
+      added = added.filter(e => e.id !== id);
+      Store.set('added_equipment', added);
+
+      const deleted = Store.get('deleted_equipment', []);
+      if (!deleted.includes(id)) {
+        deleted.push(id);
+        Store.set('deleted_equipment', deleted);
+      }
+      return mockDelay({ success: true });
+    }
+    return appsScriptRequest('deleteEquipment', { id });
+  },
+
   // ── Course ──────────────────────────────────────────────────────────────
   async getCourseContent(equipmentId) {
+    // Check if there are custom manual sections on the equipment record itself
+    try {
+      const eq = await this.getEquipmentById(equipmentId);
+      if (eq && eq.manualSections && eq.manualSections.length > 0) {
+        const sections = eq.manualSections.map((sec, i) => ({
+          id: `s${i+1}`,
+          title: I18n.lang === 'no' ? sec.titleNo : sec.titleEn,
+          titleEn: sec.titleEn,
+          content: I18n.lang === 'no' ? sec.contentNo : sec.contentEn
+        }));
+        return mockDelay({ sections });
+      }
+    } catch(err) {
+      console.warn('Could not read manualSections:', err);
+    }
+
     // Static training manuals are loaded locally from the PWA assets for instant offline speed
     const content = MockData.manualContent[equipmentId];
     if (!content) {
