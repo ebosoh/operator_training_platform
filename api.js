@@ -625,14 +625,24 @@ const API = {
     // Check if there are custom manual sections on the equipment record itself
     try {
       const eq = await this.getEquipmentById(equipmentId);
-      if (eq && eq.manualSections && eq.manualSections.length > 0) {
-        const sections = eq.manualSections.map((sec, i) => ({
-          id: `s${i+1}`,
-          title: I18n.lang === 'no' ? sec.titleNo : sec.titleEn,
-          titleEn: sec.titleEn,
-          content: I18n.lang === 'no' ? sec.contentNo : sec.contentEn
-        }));
-        return mockDelay({ sections });
+      if (eq && eq.manualSections) {
+        let sections = eq.manualSections;
+        if (typeof sections === 'string' && sections.trim().startsWith('[')) {
+          try {
+            sections = JSON.parse(sections);
+          } catch(e) {
+            sections = null;
+          }
+        }
+        if (Array.isArray(sections) && sections.length > 0) {
+          const mappedSections = sections.map((sec, i) => ({
+            id: `s${i+1}`,
+            title: I18n.lang === 'no' ? sec.titleNo : sec.titleEn,
+            titleEn: sec.titleEn,
+            content: I18n.lang === 'no' ? sec.contentNo : sec.contentEn
+          }));
+          return mockDelay({ sections: mappedSections });
+        }
       }
     } catch(err) {
       console.warn('Could not read manualSections:', err);

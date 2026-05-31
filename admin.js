@@ -654,14 +654,20 @@ function initAdminHandlers(pendingList, equipmentList) {
       if (videosContainer) {
         videosContainer.innerHTML = '';
         if (eq.videoId) {
-          if (eq.videoId.startsWith('[')) {
+          let videos = eq.videoId;
+          if (typeof videos === 'string' && videos.trim().startsWith('[')) {
             try {
-              const videos = JSON.parse(eq.videoId);
-              videos.forEach(v => renderVideoRow(v));
+              videos = JSON.parse(videos);
             } catch(e) {
-              renderVideoRow({ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId });
+              videos = [{ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId }];
             }
-          } else {
+          } else if (typeof videos === 'string') {
+            videos = [{ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId }];
+          }
+
+          if (Array.isArray(videos) && videos.length > 0) {
+            videos.forEach(v => renderVideoRow(v));
+          } else if (typeof eq.videoId === 'string') {
             renderVideoRow({ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId });
           }
         }
@@ -670,8 +676,17 @@ function initAdminHandlers(pendingList, equipmentList) {
       // Pre-populate manual sections
       if (manualSectionsContainer) {
         manualSectionsContainer.innerHTML = '';
-        if (eq.manualSections && eq.manualSections.length > 0) {
-          eq.manualSections.forEach(sec => renderManualSectionRow(sec));
+        let sections = eq.manualSections;
+        if (typeof sections === 'string' && sections.trim().startsWith('[')) {
+          try {
+            sections = JSON.parse(sections);
+          } catch(e) {
+            console.warn(e);
+            sections = [];
+          }
+        }
+        if (Array.isArray(sections) && sections.length > 0) {
+          sections.forEach(sec => renderManualSectionRow(sec));
         }
       }
 
