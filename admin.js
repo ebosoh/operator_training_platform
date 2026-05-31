@@ -365,10 +365,6 @@ export async function renderAdmin(params) {
               <input type="text" id="add-eq-qr" class="form-input" placeholder="e.g. OL-EQ-SAKS-002" required />
             </div>
             <div class="form-group">
-              <label class="form-label" style="font-size:var(--text-xs)">YouTube Video ID</label>
-              <input type="text" id="add-eq-videoid" class="form-input" placeholder="e.g. dQw4w9WgXcQ" />
-            </div>
-            <div class="form-group">
               <label class="form-label" style="font-size:var(--text-xs)">Kurspris (NOK)</label>
               <input type="number" id="add-eq-price" class="form-input" value="299" required />
             </div>
@@ -381,8 +377,25 @@ export async function renderAdmin(params) {
               <textarea id="add-eq-desc-en" class="form-input" style="height:60px;resize:vertical" placeholder="Write description in English..."></textarea>
             </div>
             <div class="form-group" style="grid-column: span 2">
+              <label class="form-label" style="font-size:var(--text-xs)">Håndbok PDF-lenke (Valgfritt / Optional)</label>
+              <input type="url" id="add-eq-pdf" class="form-input" placeholder="https://.../manual.pdf" />
+            </div>
+            <div class="form-group" style="grid-column: span 2">
               <label class="form-label" style="font-size:var(--text-xs)">Foto (Unsplash URL)</label>
               <input type="url" id="add-eq-image" class="form-input" placeholder="https://..." value="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70" />
+            </div>
+
+            <!-- Dynamic Videos Builder -->
+            <div style="grid-column: span 2;border-top:1px dashed var(--color-border);margin:var(--space-3) 0;padding-top:var(--space-3)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3)">
+                <h4 style="font-family:var(--font-heading);font-weight:700;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:0.05em;color:var(--color-gold);margin:0">
+                  🎬 Opplæringsvideoer (Valgfritt / Optional)
+                </h4>
+                <button type="button" class="btn btn-ghost btn-xs" id="add-video-row-btn" style="padding:0.2rem 0.5rem">
+                  ➕ Legg til video
+                </button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem" id="form-videos-container"></div>
             </div>
 
             <!-- Dynamic Manual Sections Builder -->
@@ -507,7 +520,39 @@ function initAdminHandlers(pendingList, equipmentList) {
   const manualSectionsContainer = document.getElementById('form-manual-sections-container');
   const addManualSecBtn = document.getElementById('add-manual-sec-btn');
 
+  const videosContainer = document.getElementById('form-videos-container');
+  const addVideoRowBtn = document.getElementById('add-video-row-btn');
+
   let activeEditId = null;
+
+  function renderVideoRow(vid = { titleNo: '', titleEn: '', videoId: '' }) {
+    if (!videosContainer) return;
+    const row = document.createElement('div');
+    row.className = 'form-video-row glass-light';
+    row.style = 'padding:0.5rem;border-radius:var(--radius-sm);border:1px solid var(--color-border);display:grid;grid-template-columns:2fr 2fr 1.5fr;gap:0.5rem;position:relative;margin-bottom:0.5rem';
+    row.innerHTML = `
+      <div class="form-group" style="margin:0">
+        <input type="text" class="form-input video-title-no" placeholder="Tittel (Norsk)" value="${vid.titleNo || ''}" required style="padding:4px 8px;font-size:var(--text-xs)" />
+      </div>
+      <div class="form-group" style="margin:0">
+        <input type="text" class="form-input video-title-en" placeholder="Title (English)" value="${vid.titleEn || ''}" required style="padding:4px 8px;font-size:var(--text-xs)" />
+      </div>
+      <div class="form-group" style="margin:0;display:flex;gap:4px;align-items:center">
+        <input type="text" class="form-input video-id-val" placeholder="YouTube-ID / Link" value="${vid.videoId || ''}" required style="padding:4px 8px;font-size:var(--text-xs);flex:1;min-width:0" />
+        <span class="remove-video-row-btn" style="cursor:pointer;font-size:var(--text-md);color:var(--color-danger);font-weight:700;padding:0 4px;user-select:none" title="Fjern">✕</span>
+      </div>
+    `;
+    row.querySelector('.remove-video-row-btn').addEventListener('click', () => {
+      row.remove();
+    });
+    videosContainer.appendChild(row);
+  }
+
+  if (addVideoRowBtn) {
+    addVideoRowBtn.addEventListener('click', () => {
+      renderVideoRow();
+    });
+  }
 
   function renderManualSectionRow(sec = { titleNo: '', titleEn: '', contentNo: '', contentEn: '' }) {
     if (!manualSectionsContainer) return;
@@ -553,6 +598,7 @@ function initAdminHandlers(pendingList, equipmentList) {
       document.getElementById('submit-eq-form-btn').textContent = lang === 'no' ? 'Lagre maskin' : 'Save Machine';
       if (addEqForm) addEqForm.reset();
       if (manualSectionsContainer) manualSectionsContainer.innerHTML = '';
+      if (videosContainer) videosContainer.innerHTML = '';
       if (addEqModal) {
         addEqModal.style.display = 'flex';
         requestAnimationFrame(() => addEqModal.classList.add('open'));
@@ -569,6 +615,7 @@ function initAdminHandlers(pendingList, equipmentList) {
       document.getElementById('submit-eq-form-btn').textContent = lang === 'no' ? 'Lagre maskin' : 'Save Machine';
       if (addEqForm) addEqForm.reset();
       if (manualSectionsContainer) manualSectionsContainer.innerHTML = '';
+      if (videosContainer) videosContainer.innerHTML = '';
       if (addEqModal) {
         addEqModal.style.display = 'flex';
         requestAnimationFrame(() => addEqModal.classList.add('open'));
@@ -597,11 +644,28 @@ function initAdminHandlers(pendingList, equipmentList) {
       document.getElementById('add-eq-weight').value = eq.weight || '';
       document.getElementById('add-eq-pages').value = eq.manualPages || 48;
       document.getElementById('add-eq-qr').value = eq.qrCode || '';
-      document.getElementById('add-eq-videoid').value = eq.videoId || '';
       document.getElementById('add-eq-price').value = eq.price ? (eq.price / 100) : 299;
       document.getElementById('add-eq-desc-no').value = eq.description || '';
       document.getElementById('add-eq-desc-en').value = eq.descriptionEn || '';
+      document.getElementById('add-eq-pdf').value = eq.pdfUrl || '';
       document.getElementById('add-eq-image').value = eq.image || '';
+
+      // Pre-populate videos
+      if (videosContainer) {
+        videosContainer.innerHTML = '';
+        if (eq.videoId) {
+          if (eq.videoId.startsWith('[')) {
+            try {
+              const videos = JSON.parse(eq.videoId);
+              videos.forEach(v => renderVideoRow(v));
+            } catch(e) {
+              renderVideoRow({ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId });
+            }
+          } else {
+            renderVideoRow({ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId });
+          }
+        }
+      }
 
       // Pre-populate manual sections
       if (manualSectionsContainer) {
@@ -674,10 +738,31 @@ function initAdminHandlers(pendingList, equipmentList) {
       const weight = document.getElementById('add-eq-weight').value.trim();
       const manualPages = parseInt(document.getElementById('add-eq-pages').value) || 48;
       const qrCode = document.getElementById('add-eq-qr').value.trim();
-      const videoId = document.getElementById('add-eq-videoid').value.trim() || null;
+      // Helper to extract YouTube video ID from links or raw ID
+      function extractYouTubeId(urlOrId) {
+        if (!urlOrId) return '';
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = urlOrId.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : urlOrId;
+      }
+
+      // Compile dynamic videos
+      const videoList = [];
+      document.querySelectorAll('.form-video-row').forEach(row => {
+        const tNo = row.querySelector('.video-title-no').value.trim();
+        const tEn = row.querySelector('.video-title-en').value.trim();
+        const rawId = row.querySelector('.video-id-val').value.trim();
+        const vId = extractYouTubeId(rawId);
+        if (vId) {
+          videoList.push({ titleNo: tNo || 'Video', titleEn: tEn || 'Video', videoId: vId });
+        }
+      });
+
+      const videoId = videoList.length > 0 ? JSON.stringify(videoList) : null;
       const price = (parseInt(document.getElementById('add-eq-price').value) || 299) * 100;
       const description = document.getElementById('add-eq-desc-no').value.trim();
       const descriptionEn = document.getElementById('add-eq-desc-en').value.trim();
+      const pdfUrl = document.getElementById('add-eq-pdf').value.trim() || null;
       const image = document.getElementById('add-eq-image').value.trim();
 
       // Sanitize Unsplash page URLs to direct image hotlinks
@@ -714,6 +799,7 @@ function initAdminHandlers(pendingList, equipmentList) {
         description: description || `${nameNo} for profesjonell bruk. Typeopplæring og sikkerhetskontroll tilgjengelig.`,
         descriptionEn: descriptionEn || `${nameEn} for professional use. Type approval training and safety control available.`,
         qrCode,
+        pdfUrl,
         manualSections,
         tags: [category.toLowerCase(), subcategory.toLowerCase()]
       };

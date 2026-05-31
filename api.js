@@ -50,10 +50,11 @@ const MockData = {
       workHeight: '8m', weight: '2400 kg',
       image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70',
       manualPages: 48, price: 29900, currency: 'NOK',
-      videoId: 'dQw4w9WgXcQ',
+      videoId: '[{"titleNo":"1. Introduksjon","titleEn":"1. Introduction","videoId":"dQw4w9WgXcQ"},{"titleNo":"2. Sikkerhetskontroll","titleEn":"2. Safety Inspection","videoId":"dQw4w9WgXcQ"}]',
       description: 'Elektrisk sakselifter for innendørs bruk. Ideell for lager, butikk og vedlikehold.',
       descriptionEn: 'Electric scissor lift for indoor use. Ideal for warehouses, retail and maintenance.',
       qrCode: 'OL-EQ-SAKS-001',
+      pdfUrl: 'https://www.jus.uio.no/english/services/library/legal-sources/norwegian-legislation/work-environment-act.pdf',
       tags: ['elektrisk', 'innendørs', 'sakselifter'],
     },
     {

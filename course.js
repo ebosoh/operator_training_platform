@@ -16,7 +16,7 @@ export async function renderCourse(params) {
   const lang = I18n.lang;
 
   if (!equipmentId) {
-    return { html: notFoundHtml('Kurs ikke funnet', '#/catalog'), init: () => {} };
+    return { html: notFoundHtml(t('assess.not_found'), '#/catalog'), init: () => {} };
   }
 
   // Load equipment + course content + enrollment
@@ -34,13 +34,13 @@ export async function renderCourse(params) {
     }
   } catch (err) {
     console.warn('Course load error:', err);
-    return { html: notFoundHtml('Kunne ikke laste kurset', '#/catalog'), init: () => {} };
+    return { html: notFoundHtml(I18n.lang === 'no' ? 'Kunne ikke laste kurset' : 'Could not load course', '#/catalog'), init: () => {} };
   }
 
   // Redirect to payment if not paid
   if (!enrollment?.paid) {
     setTimeout(() => { window.location.hash = `#/payment/${equipmentId}`; }, 100);
-    return { html: '<div class="empty-state" style="min-height:80vh"><div class="empty-state-icon">💳</div><h2>Omdirigerer til betaling...</h2></div>', init: () => {} };
+    return { html: `<div class="empty-state" style="min-height:80vh"><div class="empty-state-icon">💳</div><h2>${t('course.redirect_payment')}</h2></div>`, init: () => {} };
   }
 
   const sections = courseContent.sections || [];
@@ -78,6 +78,11 @@ export async function renderCourse(params) {
 
               <!-- Notes & Offline toggle -->
               <div style="display:flex;align-items:center;gap:var(--space-2);flex-shrink:0">
+                ${equipment.pdfUrl ? `
+                  <a href="${equipment.pdfUrl}" target="_blank" class="btn btn-primary btn-sm hover-glow-red" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;font-size:var(--text-xs);font-weight:700;padding:var(--space-2) var(--space-3);height:auto" title="${lang === 'no' ? 'Last ned PDF' : 'Download PDF'}">
+                    📥 PDF
+                  </a>
+                ` : ''}
                 <button class="btn btn-ghost btn-sm btn-icon" id="notes-toggle-btn" title="Mine notater" style="font-size:1rem">📝</button>
                 <div class="badge badge-green" id="offline-badge" style="display:none;font-size:var(--text-xs)">✓ Offline</div>
               </div>
@@ -90,8 +95,8 @@ export async function renderCourse(params) {
 
             <!-- Section Navigation (TOC) -->
             <div id="course-toc" class="card" style="display:none">
-              <div class="card-header">
-                <h3 style="font-family:var(--font-heading);font-weight:700;font-size:var(--text-sm)">📋 Innholdsfortegnelse</h3>
+               <div class="card-header">
+                <h3 style="font-family:var(--font-heading);font-weight:700;font-size:var(--text-sm)">${t('course.toc')}</h3>
                 <button onclick="document.getElementById('course-toc').style.display='none'" style="color:var(--color-text-muted);font-size:1rem;background:none;border:none;cursor:pointer">✕</button>
               </div>
               <div class="card-body" style="padding:var(--space-3)">
@@ -109,7 +114,7 @@ export async function renderCourse(params) {
               <!-- Section Content Card -->
               <div class="card animate-fadeInUp" id="section-card">
                 <div class="card-body" id="section-content" style="padding:var(--space-8);font-size:var(--text-md);line-height:1.8;color:var(--color-text-secondary)">
-                  <!-- Injected by JS -->
+                   <!-- Injected by JS -->
                 </div>
 
                 <!-- Read Confirmation -->
@@ -130,6 +135,8 @@ export async function renderCourse(params) {
                   <div style="position:relative;aspect-ratio:16/9;background:#000">
                     <iframe id="course-video" style="width:100%;height:100%;border:none" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
                   </div>
+                  <!-- Playlist tabs if more than one video -->
+                  <div id="video-playlist-tabs" style="display:none;padding:var(--space-3);background:rgba(0,0,0,0.05);border-top:1px solid var(--color-border);overflow-x:auto;white-space:nowrap;gap:var(--space-2)"></div>
                 </div>
               </div>
 
@@ -137,7 +144,7 @@ export async function renderCourse(params) {
               <div style="display:flex;gap:var(--space-3);align-items:center;justify-content:space-between;margin-top:var(--space-6)" id="course-nav">
                 <button class="btn btn-ghost" id="btn-prev-page" style="gap:0.5rem">← ${t('course.prev')}</button>
 
-                <button class="btn btn-ghost btn-sm" id="toc-toggle-btn" style="font-size:var(--text-xs)">☰ Innhold</button>
+                <button class="btn btn-ghost btn-sm" id="toc-toggle-btn" style="font-size:var(--text-xs)">${t('course.toc_toggle')}</button>
 
                 <button class="btn btn-primary" id="btn-next-page" disabled style="gap:0.5rem">${t('course.next')} →</button>
               </div>
@@ -145,8 +152,8 @@ export async function renderCourse(params) {
               <!-- Final CTA: Start Assessment -->
               <div id="start-test-area" class="card card-premium animate-scaleIn" style="display:none;margin-top:var(--space-6);text-align:center;padding:var(--space-8)">
                 <div style="font-size:3rem;margin-bottom:var(--space-4)">🎉</div>
-                <h3 style="font-family:var(--font-heading);font-size:var(--text-2xl);font-weight:800;margin-bottom:var(--space-3)">Manual gjennomlest!</h3>
-                <p style="color:var(--color-text-secondary);margin-bottom:var(--space-6)">Du har lest alle ${totalPages} seksjoner. Klar for sikkerhetstesten?</p>
+                <h3 style="font-family:var(--font-heading);font-size:var(--text-2xl);font-weight:800;margin-bottom:var(--space-3)">${t('course.read_completed')}</h3>
+                <p style="color:var(--color-text-secondary);margin-bottom:var(--space-6)">${t('course.read_completed_desc').replace('{{count}}', totalPages)}</p>
                 <a href="#/assessment/${equipmentId}" class="btn btn-gold btn-xl hover-glow-gold">
                   🧪 ${t('course.start_test')} →
                 </a>
@@ -161,7 +168,7 @@ export async function renderCourse(params) {
               </div>
               <div class="card-body">
                 <textarea id="course-notes" class="form-textarea" style="min-height:200px;font-size:var(--text-sm)" placeholder="${t('course.notes_ph')}"></textarea>
-                <button class="btn btn-ghost btn-sm btn-block" style="margin-top:var(--space-3)" id="save-notes-btn">💾 Lagre notater</button>
+                <button class="btn btn-ghost btn-sm btn-block" style="margin-top:var(--space-3)" id="save-notes-btn">${t('course.notes_save')}</button>
               </div>
             </div>
 
@@ -236,7 +243,7 @@ function initCourseHandlers({ equipment, sections, enrollment, equipmentId, tota
       const canNext = localReadPages.includes(pageIndex);
       nextBtn.disabled = !canNext;
       nextBtn.textContent = pageIndex === totalPages - 1
-        ? (localReadPages.includes(pageIndex) ? '✅ Ferdig — start test' : `${I18n.t('course.next')} →`)
+        ? (localReadPages.includes(pageIndex) ? (I18n.lang === 'no' ? '✅ Ferdig — start test' : '✅ Finished — start test') : `${I18n.t('course.next')} →`)
         : `${I18n.t('course.next')} →`;
     }
 
@@ -244,8 +251,56 @@ function initCourseHandlers({ equipment, sections, enrollment, equipmentId, tota
     const videoSection = document.getElementById('video-section');
     if (videoSection && equipment.videoId && pageIndex === totalPages - 1) {
       videoSection.style.display = 'block';
+      
+      // Parse videos
+      let videos = [];
+      if (equipment.videoId.startsWith('[')) {
+        try {
+          videos = JSON.parse(equipment.videoId);
+        } catch(e) {
+          videos = [{ titleNo: 'Video 1', titleEn: 'Video 1', videoId: equipment.videoId }];
+        }
+      } else {
+        videos = [{ titleNo: lang === 'no' ? 'Instruksjonsvideo' : 'Instructional Video', titleEn: 'Instructional Video', videoId: equipment.videoId }];
+      }
+
       const videoFrame = document.getElementById('course-video');
-      if (videoFrame) videoFrame.src = `https://www.youtube.com/embed/${equipment.videoId}?rel=0`;
+      const playlistTabs = document.getElementById('video-playlist-tabs');
+      
+      if (videoFrame && videos.length > 0) {
+        // Set default to first video
+        videoFrame.src = `https://www.youtube.com/embed/${videos[0].videoId}?rel=0`;
+        
+        if (playlistTabs) {
+          if (videos.length > 1) {
+            playlistTabs.style.display = 'flex';
+            playlistTabs.innerHTML = videos.map((vid, idx) => {
+              const activeClass = idx === 0 ? 'btn-gold' : 'btn-ghost';
+              const title = lang === 'no' ? vid.titleNo : vid.titleEn;
+              return `<button class="btn btn-xs ${activeClass} video-tab-btn" data-videoid="${vid.videoId}" data-index="${idx}" style="padding:var(--space-2) var(--space-3)">🎬 ${title}</button>`;
+            }).join('');
+            
+            // Add click listeners to switcher buttons
+            playlistTabs.querySelectorAll('.video-tab-btn').forEach(btn => {
+              btn.addEventListener('click', () => {
+                // Switch video
+                const vId = btn.dataset.videoid;
+                videoFrame.src = `https://www.youtube.com/embed/${vId}?autoplay=1&rel=0`;
+                
+                // Toggle active style
+                playlistTabs.querySelectorAll('.video-tab-btn').forEach(b => {
+                  b.classList.remove('btn-gold');
+                  b.classList.add('btn-ghost');
+                });
+                btn.classList.remove('btn-ghost');
+                btn.classList.add('btn-gold');
+              });
+            });
+          } else {
+            playlistTabs.style.display = 'none';
+          }
+        }
+      }
     } else if (videoSection) {
       videoSection.style.display = 'none';
     }
@@ -368,7 +423,7 @@ function initCourseHandlers({ equipment, sections, enrollment, equipmentId, tota
   }
   document.getElementById('save-notes-btn')?.addEventListener('click', () => {
     Store.set(noteKey, notesArea?.value || '');
-    Toast.success('Notater lagret', '📝');
+    Toast.success(I18n.t('course.notes_saved'), '📝');
   });
 
   // ── Initial Render ──────────────────────────────────────────────────────────
@@ -402,15 +457,16 @@ export async function renderCourseComplete(params) {
   let equipment = null;
   try { equipment = await API.getEquipmentById(equipmentId); } catch (_) {}
   const name = I18n.lang === 'no' ? equipment?.nameNo : equipment?.name;
+  const courseName = name || (I18n.lang === 'no' ? 'Kurset' : 'The course');
   return {
     html: `
       <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--color-bg);padding:var(--space-8)">
         <div style="max-width:520px;width:100%;text-align:center" class="animate-scaleIn">
           <div style="font-size:5rem;margin-bottom:var(--space-4)">🎓</div>
-          <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:900;margin-bottom:var(--space-3)">Kurs fullført!</h1>
-          <p style="color:var(--color-text-secondary);font-size:var(--text-md);margin-bottom:var(--space-6)">${name || 'Kurset'} — Du har bestått sikkerhetstesten og er nå klar for signering.</p>
-          <a href="#/sign/${equipmentId}" class="btn btn-gold btn-xl btn-block" style="margin-bottom:var(--space-3)">✍️ Signer nå →</a>
-          <a href="#/catalog" class="btn btn-ghost btn-block">← Tilbake til katalog</a>
+          <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:900;margin-bottom:var(--space-3)">${I18n.t('course.complete.title')}</h1>
+          <p style="color:var(--color-text-secondary);font-size:var(--text-md);margin-bottom:var(--space-6)">${I18n.t('course.complete.desc').replace('{{name}}', courseName)}</p>
+          <a href="#/sign/${equipmentId}" class="btn btn-gold btn-xl btn-block" style="margin-bottom:var(--space-3)">${I18n.t('course.complete.btn_sign')}</a>
+          <a href="#/catalog" class="btn btn-ghost btn-block">${I18n.t('course.complete.btn_catalog')}</a>
         </div>
       </div>`,
     init: () => {}
@@ -418,5 +474,5 @@ export async function renderCourseComplete(params) {
 }
 
 function notFoundHtml(msg, backHref) {
-  return `<div class="empty-state" style="min-height:80vh"><div class="empty-state-icon">⚠️</div><h2 class="empty-state-title">${msg}</h2><a href="${backHref}" class="btn btn-primary" style="margin-top:1rem">← Tilbake</a></div>`;
+  return `<div class="empty-state" style="min-height:80vh"><div class="empty-state-icon">⚠️</div><h2 class="empty-state-title">${msg}</h2><a href="${backHref}" class="btn btn-primary" style="margin-top:1rem">${I18n.lang === 'no' ? '← Tilbake' : '← Back'}</a></div>`;
 }
