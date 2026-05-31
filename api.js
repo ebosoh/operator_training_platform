@@ -2,6 +2,49 @@ import I18n from './i18n.js';
 import { Modal, Store } from './utils.js';
 
 /**
+ * Sanitizes any Unsplash photo URL or raw short-ID into a robust, high-performance direct CDN redirect endpoint.
+ * Handles page links, raw IDs, and broken CDN paths while preserving working full CDN hotlinks.
+ */
+function sanitizeUnsplashUrl(url) {
+  if (!url) return 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70';
+  url = url.trim();
+
+  // Case 1: Unsplash page or share URL (e.g. unsplash.com/photos/...)
+  if (url.includes('unsplash.com/photos/')) {
+    const match = url.match(/unsplash\.com\/photos\/([a-zA-Z0-9-_]+)/);
+    if (match && match[1]) {
+      const segment = match[1];
+      const parts = segment.split('-');
+      const photoId = parts[parts.length - 1];
+      return `https://unsplash.com/photos/${photoId}/download?force=true`;
+    }
+  }
+
+  // Case 2: Broken/short-ID CDN URL (e.g. images.unsplash.com/photo-tY5V5d7f)
+  if (url.includes('images.unsplash.com/photo-')) {
+    const match = url.match(/images\.unsplash\.com\/photo-([a-zA-Z0-9-_]+)/);
+    if (match && match[1]) {
+      const segment = match[1];
+      // A valid full CDN URL ID typically looks like "1504307651254-35680f356dfd"
+      // It has a length > 20 and contains a hyphen separating a long timestamp and hex ID
+      const hasLongCdnFormat = segment.length > 20 && segment.includes('-');
+      if (!hasLongCdnFormat) {
+        return `https://unsplash.com/photos/${segment}/download?force=true`;
+      }
+    }
+    return url; // Leave fully qualified long CDN URLs intact
+  }
+
+  // Case 3: Raw short-ID (e.g., tY5V5d7f or n9-F_cK1k0s)
+  if (!url.startsWith('http') && url.length >= 6 && url.length <= 15) {
+    return `https://unsplash.com/photos/${url}/download?force=true`;
+  }
+
+  return url;
+}
+
+/**
+
  * api.js — API Abstraction Layer
  * Typeopplæring.no Safety Training Platform
  * 
@@ -513,6 +556,7 @@ const API = {
 
   // ── Equipment ───────────────────────────────────────────────────────────
   async getEquipment(filters = {}) {
+    let result;
     if (API_CONFIG.USE_MOCK) {
       const added = Store.get('added_equipment', []);
       const deleted = Store.get('deleted_equipment', []);
@@ -544,39 +588,59 @@ const API = {
           (e.tags || []).some(t => t.includes(q))
         );
       }
-      return mockDelay({ items, total: items.length });
+      result = { items, total: items.length };
+    } else {
+      result = await appsScriptRequest('getEquipment', filters);
     }
-    return appsScriptRequest('getEquipment', filters);
+
+    if (result && Array.isArray(result.items)) {
+      result.items.forEach(eq => {
+        if (eq) eq.image = sanitizeUnsplashUrl(eq.image);
+      });
+    }
+    return API_CONFIG.USE_MOCK ? mockDelay(result) : result;
   },
 
   async getEquipmentById(id) {
+    let item;
     if (API_CONFIG.USE_MOCK) {
       const added = Store.get('added_equipment', []);
       const deleted = Store.get('deleted_equipment', []);
       if (deleted.includes(id)) throw new Error('Equipment deleted');
 
       // Check added first (updated seeds or new creations), then fallback to seed
-      let item = added.find(e => e.id === id);
+      item = added.find(e => e.id === id);
       if (!item) item = MockData.equipment.find(e => e.id === id);
 
       if (!item) throw new Error('Equipment not found');
-      return mockDelay(item);
+    } else {
+      item = await appsScriptRequest('getEquipmentById', { id });
     }
-    return appsScriptRequest('getEquipmentById', { id });
+
+    if (item) {
+      item.image = sanitizeUnsplashUrl(item.image);
+    }
+    return API_CONFIG.USE_MOCK ? mockDelay(item) : item;
   },
 
   async getEquipmentByQR(qrCode) {
+    let item;
     if (API_CONFIG.USE_MOCK) {
       const added = Store.get('added_equipment', []);
       const deleted = Store.get('deleted_equipment', []);
 
-      let item = added.find(e => e.qrCode === qrCode);
+      item = added.find(e => e.qrCode === qrCode);
       if (!item) item = MockData.equipment.find(e => e.qrCode === qrCode);
 
       if (!item || deleted.includes(item.id)) throw new Error('Equipment not found for QR: ' + qrCode);
-      return mockDelay(item);
+    } else {
+      item = await appsScriptRequest('validateQR', { qrCode });
     }
-    return appsScriptRequest('validateQR', { qrCode });
+
+    if (item) {
+      item.image = sanitizeUnsplashUrl(item.image);
+    }
+    return API_CONFIG.USE_MOCK ? mockDelay(item) : item;
   },
 
   async addEquipment(data) {
