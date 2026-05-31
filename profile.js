@@ -189,6 +189,22 @@ export async function renderProfile(params) {
                   <button class="btn btn-ghost" id="clear-profile-sig-btn" style="flex:1">${t('profile.active_tabs.sig_btn_clear')}</button>
                   <button class="btn btn-primary" id="save-profile-sig-btn" style="flex:2">${t('profile.active_tabs.sig_btn_save')}</button>
                 </div>
+
+                <div style="margin:var(--space-4) 0; font-size:var(--text-xxs); color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.05em; text-align:center; display:flex; align-items:center; gap:0.5rem; justify-content:center">
+                  <div style="flex:1; height:1px; background:var(--color-border)"></div>
+                  <span>${lang === 'no' ? 'Eller' : 'Or'}</span>
+                  <div style="flex:1; height:1px; background:var(--color-border)"></div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:0;">
+                  <div style="position:relative; overflow:hidden; display:inline-block; width:100%">
+                    <button type="button" class="btn btn-ghost btn-block btn-sm" id="upload-sig-trigger-btn" style="border-style:dashed; border-color:var(--color-gold); color:var(--color-gold)">
+                      📁 ${lang === 'no' ? 'Last opp signaturbilde (PNG/JPG)' : 'Upload signature image (PNG/JPG)'}
+                    </button>
+                    <input type="file" id="profile-sig-upload-input" accept="image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer;" />
+                  </div>
+                  <span id="sig-upload-filename" style="font-size:var(--text-xxs); color:var(--color-text-muted); display:block; text-align:center; margin-top:0.25rem;"></span>
+                </div>
               </div>
             </div>
           </div>
@@ -590,6 +606,50 @@ function initSignatureTabHandlers() {
       }
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  }
+
+  // Handle signature image upload
+  const fileInput = document.getElementById('profile-sig-upload-input');
+  const filenameSpan = document.getElementById('sig-upload-filename');
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (filenameSpan) filenameSpan.textContent = file.name;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          // Clear and draw image scaled onto drawing board canvas
+          ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+          
+          const maxW = canvas.width / dpr;
+          const maxH = canvas.height / dpr;
+          const imgAspect = img.width / img.height;
+          const canvasAspect = maxW / maxH;
+          
+          let drawW, drawH, x, y;
+          if (imgAspect > canvasAspect) {
+            drawW = maxW - 20; // 10px padding
+            drawH = drawW / imgAspect;
+            x = 10;
+            y = (maxH - drawH) / 2;
+          } else {
+            drawH = maxH - 20; // 10px padding
+            drawW = drawH * imgAspect;
+            x = (maxW - drawW) / 2;
+            y = 10;
+          }
+
+          ctx.drawImage(img, x, y, drawW, drawH);
+          Toast.success(I18n.lang === 'no' ? 'Signaturbilde lastet opp! Klikk på Lagre signatur for å bekrefte.' : 'Signature image uploaded! Click Save Signature to confirm.');
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
     });
   }
 }
