@@ -627,74 +627,90 @@ function initAdminHandlers(pendingList, equipmentList) {
   // Edit machine handler
   document.querySelectorAll('.admin-edit-eq-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const eqId = btn.dataset.id;
-      const eq = equipmentList.find(e => e.id === eqId);
-      if (!eq) return;
+      try {
+        const eqId = btn.dataset.id;
+        const eq = equipmentList.find(e => e.id === eqId);
+        if (!eq) return;
 
-      activeEditId = eqId;
-      document.getElementById('add-eq-modal-title').textContent = lang === 'no' ? 'Rediger maskin / kurs' : 'Edit Machine / Course';
-      document.getElementById('submit-eq-form-btn').textContent = lang === 'no' ? 'Oppdater maskin' : 'Update Machine';
+        activeEditId = eqId;
+        
+        const titleEl = document.getElementById('add-eq-modal-title');
+        if (titleEl) titleEl.textContent = lang === 'no' ? 'Rediger maskin / kurs' : 'Edit Machine / Course';
+        
+        const submitBtn = document.getElementById('submit-eq-form-btn');
+        if (submitBtn) submitBtn.textContent = lang === 'no' ? 'Oppdater maskin' : 'Update Machine';
 
-      // Pre-populate fields
-      document.getElementById('add-eq-name-no').value = eq.nameNo || '';
-      document.getElementById('add-eq-name-en').value = eq.name || '';
-      document.getElementById('add-eq-cat').value = eq.category || 'Lifter';
-      document.getElementById('add-eq-subcat').value = eq.subcategory || '';
-      document.getElementById('add-eq-height').value = eq.workHeight || '';
-      document.getElementById('add-eq-weight').value = eq.weight || '';
-      document.getElementById('add-eq-pages').value = eq.manualPages || 48;
-      document.getElementById('add-eq-qr').value = eq.qrCode || '';
-      document.getElementById('add-eq-price').value = eq.price ? (eq.price / 100) : 299;
-      document.getElementById('add-eq-desc-no').value = eq.description || '';
-      document.getElementById('add-eq-desc-en').value = eq.descriptionEn || '';
-      document.getElementById('add-eq-pdf').value = eq.pdfUrl || '';
-      document.getElementById('add-eq-image').value = eq.image || '';
+        // Safe populator helper to prevent null-element crashes
+        const setVal = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.value = val;
+          else console.warn(`Element with id ${id} not found in edit modal.`);
+        };
 
-      // Pre-populate videos
-      if (videosContainer) {
-        videosContainer.innerHTML = '';
-        if (eq.videoId) {
-          let videos = eq.videoId;
-          if (typeof videos === 'string' && videos.trim().startsWith('[')) {
-            try {
-              videos = JSON.parse(videos);
-            } catch(e) {
+        // Pre-populate fields safely
+        setVal('add-eq-name-no', eq.nameNo || '');
+        setVal('add-eq-name-en', eq.name || '');
+        setVal('add-eq-cat', eq.category || 'Lifter');
+        setVal('add-eq-subcat', eq.subcategory || '');
+        setVal('add-eq-height', eq.workHeight || '');
+        setVal('add-eq-weight', eq.weight || '');
+        setVal('add-eq-pages', eq.manualPages || 48);
+        setVal('add-eq-qr', eq.qrCode || '');
+        setVal('add-eq-price', eq.price ? (eq.price / 100) : 299);
+        setVal('add-eq-desc-no', eq.description || '');
+        setVal('add-eq-desc-en', eq.descriptionEn || '');
+        setVal('add-eq-pdf', eq.pdfUrl || '');
+        setVal('add-eq-image', eq.image || '');
+
+        // Pre-populate videos safely
+        if (videosContainer) {
+          videosContainer.innerHTML = '';
+          if (eq.videoId) {
+            let videos = eq.videoId;
+            if (typeof videos === 'string' && videos.trim().startsWith('[')) {
+              try {
+                videos = JSON.parse(videos);
+              } catch(e) {
+                videos = [{ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId }];
+              }
+            } else if (typeof videos === 'string') {
               videos = [{ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId }];
             }
-          } else if (typeof videos === 'string') {
-            videos = [{ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId }];
-          }
 
-          if (Array.isArray(videos) && videos.length > 0) {
-            videos.forEach(v => renderVideoRow(v));
-          } else if (typeof eq.videoId === 'string') {
-            renderVideoRow({ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId });
+            if (Array.isArray(videos) && videos.length > 0) {
+              videos.forEach(v => renderVideoRow(v));
+            } else if (typeof eq.videoId === 'string') {
+              renderVideoRow({ titleNo: 'Opplæringsvideo', titleEn: 'Instructional Video', videoId: eq.videoId });
+            }
           }
         }
-      }
 
-      // Pre-populate manual sections
-      if (manualSectionsContainer) {
-        manualSectionsContainer.innerHTML = '';
-        let sections = eq.manualSections;
-        if (typeof sections === 'string' && sections.trim().startsWith('[')) {
-          try {
-            sections = JSON.parse(sections);
-          } catch(e) {
-            console.warn(e);
-            sections = [];
+        // Pre-populate manual sections safely
+        if (manualSectionsContainer) {
+          manualSectionsContainer.innerHTML = '';
+          let sections = eq.manualSections;
+          if (typeof sections === 'string' && sections.trim().startsWith('[')) {
+            try {
+              sections = JSON.parse(sections);
+            } catch(e) {
+              console.warn(e);
+              sections = [];
+            }
+          }
+          if (Array.isArray(sections) && sections.length > 0) {
+            sections.forEach(sec => renderManualSectionRow(sec));
           }
         }
-        if (Array.isArray(sections) && sections.length > 0) {
-          sections.forEach(sec => renderManualSectionRow(sec));
-        }
-      }
 
-      // Show modal
-      if (addEqModal) {
-        addEqModal.style.display = 'flex';
-        requestAnimationFrame(() => addEqModal.classList.add('open'));
-        document.body.style.overflow = 'hidden';
+        // Show modal
+        if (addEqModal) {
+          addEqModal.style.display = 'flex';
+          requestAnimationFrame(() => addEqModal.classList.add('open'));
+          document.body.style.overflow = 'hidden';
+        }
+      } catch (err) {
+        console.error('Error opening edit modal:', err);
+        Toast.error('Kunne ikke laste redigeringsskjema: ' + err.message, 'Feil');
       }
     });
   });
