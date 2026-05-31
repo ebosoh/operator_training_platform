@@ -36,11 +36,16 @@ export async function renderAdmin(params) {
   let equipmentList = [];
 
   try {
-    stats = await API.getAdminStats();
-    pendingList = await API.getPendingApprovals();
-    usersList = await API.getAllUsers();
-    const eqResult = await API.getEquipment();
-    equipmentList = eqResult.items || [];
+    const [statsRes, pendingRes, usersRes, eqRes] = await Promise.all([
+      API.getAdminStats().catch(e => { console.warn(e); return stats; }),
+      API.getPendingApprovals().catch(e => { console.warn(e); return []; }),
+      API.getAllUsers().catch(e => { console.warn(e); return []; }),
+      API.getEquipment().catch(e => { console.warn(e); return { items: [] }; })
+    ]);
+    stats = statsRes;
+    pendingList = pendingRes;
+    usersList = usersRes;
+    equipmentList = eqRes.items || [];
   } catch (err) {
     console.warn('Could not load admin workspace data:', err);
   }
