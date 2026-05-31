@@ -521,12 +521,24 @@ function initAdminHandlers(pendingList, equipmentList) {
       const qrCode = document.getElementById('add-eq-qr').value.trim();
       const image = document.getElementById('add-eq-image').value.trim();
 
+      // Sanitize Unsplash page URLs to direct image hotlinks
+      let finalImageUrl = image;
+      if (image.includes('unsplash.com/photos/')) {
+        const match = image.match(/unsplash\.com\/photos\/([a-zA-Z0-9-]+)/);
+        if (match && match[1]) {
+          const segment = match[1];
+          const parts = segment.split('-');
+          const photoId = parts[parts.length - 1];
+          finalImageUrl = `https://images.unsplash.com/photo-${photoId}?w=600&q=70`;
+        }
+      }
+
       const newEq = {
         id: `EQ-${subcategory.substring(0,4).toUpperCase()}-${Date.now()}`,
         name: nameEn, nameNo,
         category, subcategory,
         workHeight, weight,
-        image, manualPages,
+        image: finalImageUrl, manualPages,
         price: 29900, currency: 'NOK',
         videoId: null,
         description: `${nameNo} for profesjonell bruk. Typeopplæring og sikkerhetskontroll tilgjengelig.`,
