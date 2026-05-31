@@ -286,7 +286,7 @@ export async function renderAdmin(params) {
 
       <!-- COUNTERSIGN APPROVAL MODAL -->
       <div class="modal-overlay" id="admin-sign-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;padding:var(--space-4)">
-        <div class="modal-content card" style="width:100%;max-width:500px;overflow:visible">
+        <div class="modal card" style="width:100%;max-width:500px;overflow:visible">
           <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
             <h3 style="font-family:var(--font-heading);font-weight:800;margin:0">Countersignering & Godkjenning</h3>
             <span style="cursor:pointer;font-size:1.5rem" id="close-admin-modal-btn">✕</span>
@@ -320,7 +320,7 @@ export async function renderAdmin(params) {
 
       <!-- ADD EQUIPMENT MODAL -->
       <div class="modal-overlay" id="admin-add-eq-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;padding:var(--space-4)">
-        <div class="modal-content card" style="width:100%;max-width:550px;overflow:visible">
+        <div class="modal card" style="width:100%;max-width:550px;overflow:visible">
           <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
             <h3 style="font-family:var(--font-heading);font-weight:800;margin:0">Legg til ny maskin i flåten</h3>
             <span style="cursor:pointer;font-size:1.5rem" id="close-add-eq-modal-btn">✕</span>
@@ -445,6 +445,8 @@ function initAdminHandlers(pendingList, equipmentList) {
       // Show modal
       if (signModal) {
         signModal.style.display = 'flex';
+        requestAnimationFrame(() => signModal.classList.add('open'));
+        document.body.style.overflow = 'hidden';
         initAdminCanvasSignature();
       }
     });
@@ -453,7 +455,13 @@ function initAdminHandlers(pendingList, equipmentList) {
   // Close modals
   if (closeBtn) {
     closeBtn.addEventListener('click', () => {
-      if (signModal) signModal.style.display = 'none';
+      if (signModal) {
+        signModal.classList.remove('open');
+        setTimeout(() => {
+          signModal.style.display = 'none';
+        }, 300);
+      }
+      document.body.style.overflow = '';
       activeEnrollmentId = null;
     });
   }
@@ -467,19 +475,33 @@ function initAdminHandlers(pendingList, equipmentList) {
 
   if (addEqBtn) {
     addEqBtn.addEventListener('click', () => {
-      if (addEqModal) addEqModal.style.display = 'flex';
+      if (addEqModal) {
+        addEqModal.style.display = 'flex';
+        requestAnimationFrame(() => addEqModal.classList.add('open'));
+        document.body.style.overflow = 'hidden';
+      }
     });
   }
 
   const headerAddBtn = document.getElementById('admin-header-add-eq-btn');
   if (headerAddBtn) {
     headerAddBtn.addEventListener('click', () => {
-      if (addEqModal) addEqModal.style.display = 'flex';
+      if (addEqModal) {
+        addEqModal.style.display = 'flex';
+        requestAnimationFrame(() => addEqModal.classList.add('open'));
+        document.body.style.overflow = 'hidden';
+      }
     });
   }
 
   function closeAddEqModal() {
-    if (addEqModal) addEqModal.style.display = 'none';
+    if (addEqModal) {
+      addEqModal.classList.remove('open');
+      setTimeout(() => {
+        addEqModal.style.display = 'none';
+      }, 300);
+    }
+    document.body.style.overflow = '';
     if (addEqForm) addEqForm.reset();
   }
 
@@ -628,7 +650,13 @@ function initAdminHandlers(pendingList, equipmentList) {
         }
 
         // Celebrate!
-        if (signModal) signModal.style.display = 'none';
+        if (signModal) {
+          signModal.classList.remove('open');
+          setTimeout(() => {
+            signModal.style.display = 'none';
+          }, 300);
+        }
+        document.body.style.overflow = '';
         launchConfetti();
         Toast.success(`Sertifikat ${cert.certNumber} er utstedt! E-post sendt til operatør.`, 'Sertifisert');
         
