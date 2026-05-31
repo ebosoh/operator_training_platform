@@ -38,11 +38,20 @@ export async function renderCatalog(params) {
         <!-- Catalog Header -->
         <div style="background:linear-gradient(180deg,var(--color-surface),var(--color-bg));border-bottom:1px solid var(--color-border);padding:var(--space-8) 0 var(--space-6)">
           <div class="container">
-            <div class="section-label animate-fadeInDown">140+ Maskiner · Oslo Liftutleie</div>
-            <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:800;margin-bottom:var(--space-2)" class="animate-fadeInUp">
-              ${t('catalog.title')}
-            </h1>
-            <p style="color:var(--color-text-secondary);font-size:var(--text-md)" class="animate-fadeInUp delay-100">${t('catalog.subtitle')}</p>
+            <div class="section-label animate-fadeInDown">140+ ${lang === 'no' ? 'Maskiner' : 'Machines'} · Oslo Liftutleie</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+              <div>
+                <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:800;margin-bottom:var(--space-2)" class="animate-fadeInUp">
+                  ${t('catalog.title')}
+                </h1>
+                <p style="color:var(--color-text-secondary);font-size:var(--text-md)" class="animate-fadeInUp delay-100">${t('catalog.subtitle')}</p>
+              </div>
+              ${Auth.isAdmin() ? `
+                <a href="#/admin/equipment" class="btn btn-gold btn-sm hover-glow-gold animate-fadeInUp">
+                  ➕ ${lang === 'no' ? 'Legg til ny maskin' : 'Add New Machine'}
+                </a>
+              ` : ''}
+            </div>
 
             <!-- Search -->
             <div class="search-wrapper animate-fadeInUp delay-200" style="max-width:520px;margin-top:var(--space-6)">
@@ -69,15 +78,15 @@ export async function renderCatalog(params) {
         <!-- Equipment Grid -->
         <div class="container" style="padding-top:var(--space-8);padding-bottom:var(--space-16)">
           <div id="catalog-results-count" style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-4)">
-            ${equipment.length} maskiner funnet
+            ${t('catalog.results_found').replace('{{count}}', equipment.length)}
           </div>
           <div id="equipment-grid" class="grid-auto-fill-md">
             ${renderEquipmentCards(equipment, lang)}
           </div>
           <div id="catalog-empty" class="empty-state hidden">
             <div class="empty-state-icon">🔍</div>
-            <div class="empty-state-title">Ingen maskiner funnet</div>
-            <div class="empty-state-desc">Prøv et annet søk eller velg en annen kategori.</div>
+            <div class="empty-state-title">${t('catalog.empty_title')}</div>
+            <div class="empty-state-desc">${t('catalog.empty_desc')}</div>
           </div>
         </div>
       </div>
@@ -172,7 +181,7 @@ function initCatalogHandlers(allEquipment) {
     const count = document.getElementById('catalog-results-count');
 
     if (grid) grid.innerHTML = renderEquipmentCards(filtered, I18n.lang);
-    if (count) count.textContent = `${filtered.length} maskiner funnet`;
+    if (count) count.textContent = I18n.t('catalog.results_found').replace('{{count}}', filtered.length);
     if (empty) empty.classList.toggle('hidden', filtered.length > 0);
   }
 
@@ -211,7 +220,7 @@ export async function renderEquipmentDetail(params) {
     equipment = await API.getEquipmentById(id);
   } catch (err) {
     return {
-      html: `<div class="empty-state min-h-screen"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">Maskin ikke funnet</div><a href="#/catalog" class="btn btn-primary">← Tilbake til katalog</a></div>`,
+      html: `<div class="empty-state min-h-screen"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">${t('catalog.not_found_title')}</div><a href="#/catalog" class="btn btn-primary">${t('catalog.back_to_catalog')}</a></div>`,
       init: () => {}
     };
   }
@@ -227,7 +236,7 @@ export async function renderEquipmentDetail(params) {
         <div style="background:var(--color-surface);border-bottom:1px solid var(--color-border);padding:var(--space-3) 0">
           <div class="container">
             <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--color-text-muted)">
-              <a href="#/catalog" style="color:var(--color-text-muted);hover:color:var(--color-gold)">Katalog</a>
+              <a href="#/catalog" style="color:var(--color-text-muted);hover:color:var(--color-gold)">${t('catalog.breadcrumb_root')}</a>
               <span>›</span>
               <span style="color:var(--color-text-secondary)">${equipment.category}</span>
               <span>›</span>
@@ -250,17 +259,17 @@ export async function renderEquipmentDetail(params) {
               <!-- Specs Grid -->
               <div class="card">
                 <div class="card-header">
-                  <h3 style="font-family:var(--font-heading);font-weight:700">Tekniske data</h3>
+                  <h3 style="font-family:var(--font-heading);font-weight:700">${t('catalog.tech_specs')}</h3>
                 </div>
                 <div class="card-body">
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
                     ${[
-                      { label: 'Kategori', value: equipment.category },
-                      { label: 'Type', value: equipment.subcategory },
-                      equipment.workHeight !== 'N/A' ? { label: 'Arbeidshøyde', value: equipment.workHeight } : null,
-                      { label: 'Vekt', value: equipment.weight },
-                      { label: 'Manualens omfang', value: `${equipment.manualPages} sider` },
-                      equipment.videoId ? { label: 'Instruksjonsvideo', value: '✅ Tilgjengelig' } : null,
+                      { label: t('catalog.spec.category'), value: equipment.category },
+                      { label: t('catalog.spec.type'), value: equipment.subcategory },
+                      equipment.workHeight !== 'N/A' ? { label: t('catalog.spec.height'), value: equipment.workHeight } : null,
+                      { label: t('catalog.spec.weight'), value: equipment.weight },
+                      { label: t('catalog.spec.manual_pages'), value: t('catalog.spec.manual_pages_val').replace('{{pages}}', equipment.manualPages) },
+                      equipment.videoId ? { label: t('catalog.spec.video'), value: t('catalog.spec.video_available') } : null,
                     ].filter(Boolean).map(item => `
                       <div>
                         <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem">${item.label}</div>
@@ -280,16 +289,16 @@ export async function renderEquipmentDetail(params) {
 
               <!-- What's included -->
               <div style="margin-bottom:var(--space-6)">
-                <h3 style="font-family:var(--font-heading);font-weight:700;margin-bottom:var(--space-3);font-size:var(--text-md)">Dette er inkludert:</h3>
+                <h3 style="font-family:var(--font-heading);font-weight:700;margin-bottom:var(--space-3);font-size:var(--text-md)">${t('catalog.included.title')}</h3>
                 <div style="display:flex;flex-direction:column;gap:var(--space-2)">
                   ${[
-                    `📄 Digital brukermanual (${equipment.manualPages} sider)`,
-                    equipment.videoId ? '🎬 Instruksjonsvideo' : null,
-                    '🧪 Sikkerhetstest (3-4 spørsmål)',
-                    '✍️ Digital signatur (operatør + Oslo Lift)',
-                    '🏆 Offisielt diplom sendt på e-post',
-                    '🔗 Del til CV og LinkedIn',
-                    '⏰ Livstidstilgang til manualen',
+                    t('catalog.included.manual').replace('{{pages}}', equipment.manualPages),
+                    equipment.videoId ? t('catalog.included.video') : null,
+                    t('catalog.included.test'),
+                    t('catalog.included.signature'),
+                    t('catalog.included.cert'),
+                    t('catalog.included.share'),
+                    t('catalog.included.lifetime'),
                   ].filter(Boolean).map(item => `
                     <div style="display:flex;align-items:center;gap:var(--space-3);font-size:var(--text-sm);color:var(--color-text-secondary)">
                       <span>${item}</span>
@@ -302,33 +311,33 @@ export async function renderEquipmentDetail(params) {
               <div class="card card-premium" style="padding:var(--space-6)">
                 <div style="display:flex;align-items:baseline;gap:var(--space-2);margin-bottom:var(--space-2)">
                   <span style="font-family:var(--font-heading);font-size:var(--text-4xl);font-weight:900;color:var(--color-gold)">299</span>
-                  <span style="color:var(--color-text-muted);font-size:var(--text-md)">NOK inkl. MVA</span>
+                  <span style="color:var(--color-text-muted);font-size:var(--text-md)">${t('catalog.price_vat').replace('299 ', '')}</span>
                 </div>
-                <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-5)">Engangsbetaling · Livstidstilgang</p>
+                <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-5)">${t('catalog.lifetime_access')}</p>
 
                 ${isLoggedIn ? `
                   <a href="#/payment/${equipment.id}" class="btn btn-primary btn-block btn-lg hover-glow-red" id="enroll-btn" style="margin-bottom:var(--space-3)">
-                    🚀 Start Kurs — 299 NOK
+                    ${t('catalog.btn_enroll')}
                   </a>
                 ` : `
                   <a href="#/register" class="btn btn-primary btn-block btn-lg hover-glow-red" style="margin-bottom:var(--space-3)">
-                    🚀 Registrer og start kurs
+                    ${t('catalog.btn_register_enroll')}
                   </a>
                   <a href="#/login" class="btn btn-ghost btn-block btn-sm">
-                    Har allerede konto? Logg inn
+                    ${t('catalog.has_account')}
                   </a>
                 `}
 
                 <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-4);margin-top:var(--space-4)">
-                  <span style="font-size:var(--text-xs);color:var(--color-text-muted)">💳 Kortbetaling</span>
-                  <span style="font-size:var(--text-xs);color:var(--color-text-muted)">📱 Vipps</span>
-                  <span style="font-size:var(--text-xs);color:var(--color-text-muted)">🏢 Faktura</span>
+                  <span style="font-size:var(--text-xs);color:var(--color-text-muted)">${t('catalog.card_pay')}</span>
+                  <span style="font-size:var(--text-xs);color:var(--color-text-muted)">${t('catalog.vipps_pay')}</span>
+                  <span style="font-size:var(--text-xs);color:var(--color-text-muted)">${t('catalog.invoice_pay')}</span>
                 </div>
               </div>
 
               <!-- QR Code -->
               <div style="margin-top:var(--space-6);text-align:center">
-                <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">QR-kode for onsite skanning</p>
+                <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">${t('catalog.qr_onsite')}</p>
                 <div id="equipment-qr" style="display:inline-block;padding:var(--space-3);background:white;border-radius:var(--radius-md)"></div>
                 <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-2)">${equipment.qrCode}</p>
               </div>

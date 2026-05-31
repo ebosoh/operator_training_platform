@@ -58,7 +58,10 @@ export async function renderAdmin(params) {
                   ${lang === 'no' ? 'Systemadministrasjon' : 'System Administration'}
                 </h1>
               </div>
-              <div>
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                <button class="btn btn-primary btn-sm hover-glow-red animate-fadeInUp" id="admin-header-add-eq-btn">
+                  ➕ ${lang === 'no' ? 'Legg til maskin' : 'Add Machine'}
+                </button>
                 <button class="btn btn-gold btn-sm hover-glow-gold animate-fadeInUp" id="admin-export-visma-btn">
                   📊 ${t('admin.export_visma')} (CSV)
                 </button>
@@ -464,6 +467,13 @@ function initAdminHandlers(pendingList, equipmentList) {
 
   if (addEqBtn) {
     addEqBtn.addEventListener('click', () => {
+      if (addEqModal) addEqModal.style.display = 'flex';
+    });
+  }
+
+  const headerAddBtn = document.getElementById('admin-header-add-eq-btn');
+  if (headerAddBtn) {
+    headerAddBtn.addEventListener('click', () => {
       if (addEqModal) addEqModal.style.display = 'flex';
     });
   }
