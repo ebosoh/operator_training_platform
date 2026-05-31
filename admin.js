@@ -477,7 +477,7 @@ function initAdminHandlers(pendingList, equipmentList) {
   if (cancelAddEqBtn) cancelAddEqBtn.addEventListener('click', closeAddEqModal);
 
   if (addEqForm) {
-    addEqForm.addEventListener('submit', (e) => {
+    addEqForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const nameNo = document.getElementById('add-eq-name-no').value.trim();
       const nameEn = document.getElementById('add-eq-name-en').value.trim();
@@ -503,15 +503,18 @@ function initAdminHandlers(pendingList, equipmentList) {
         tags: [category.toLowerCase(), subcategory.toLowerCase()]
       };
 
-      // Add directly to local memory catalog
-      MockData.equipment.push(newEq);
-      Toast.success(`${nameNo} har blitt lagt til i maskinlisten!`, 'Maskin opprettet');
-      closeAddEqModal();
+      try {
+        await API.addEquipment(newEq);
+        Toast.success(`${nameNo} har blitt lagt til i maskinlisten!`, 'Maskin opprettet');
+        closeAddEqModal();
 
-      // Reload admin workspace after short delay to show new item
-      setTimeout(() => {
-        window.location.reload();
-      }, 800);
+        // Reload admin workspace after short delay to show new item
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+      } catch (err) {
+        Toast.error('Kunne ikke lagre utstyret: ' + err.message, 'Feil');
+      }
     });
   }
 

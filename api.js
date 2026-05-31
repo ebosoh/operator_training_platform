@@ -1,5 +1,5 @@
 import I18n from './i18n.js';
-import { Modal } from './utils.js';
+import { Modal, Store } from './utils.js';
 
 /**
  * api.js — API Abstraction Layer
@@ -513,7 +513,9 @@ const API = {
   // ── Equipment ───────────────────────────────────────────────────────────
   async getEquipment(filters = {}) {
     if (API_CONFIG.USE_MOCK) {
-      let items = [...MockData.equipment];
+      const added = Store.get('added_equipment', []);
+      let items = [...MockData.equipment, ...added];
+      
       if (filters.category && filters.category !== 'all') {
         items = items.filter(e => e.category === filters.category ||
           e.subcategory === filters.category);
@@ -534,7 +536,8 @@ const API = {
 
   async getEquipmentById(id) {
     if (API_CONFIG.USE_MOCK) {
-      const item = MockData.equipment.find(e => e.id === id);
+      const added = Store.get('added_equipment', []);
+      const item = [...MockData.equipment, ...added].find(e => e.id === id);
       if (!item) throw new Error('Equipment not found');
       return mockDelay(item);
     }
@@ -543,11 +546,22 @@ const API = {
 
   async getEquipmentByQR(qrCode) {
     if (API_CONFIG.USE_MOCK) {
-      const item = MockData.equipment.find(e => e.qrCode === qrCode);
+      const added = Store.get('added_equipment', []);
+      const item = [...MockData.equipment, ...added].find(e => e.qrCode === qrCode);
       if (!item) throw new Error('Equipment not found for QR: ' + qrCode);
       return mockDelay(item);
     }
     return appsScriptRequest('validateQR', { qrCode });
+  },
+
+  async addEquipment(data) {
+    if (API_CONFIG.USE_MOCK) {
+      const added = Store.get('added_equipment', []);
+      added.push(data);
+      Store.set('added_equipment', added);
+      return mockDelay({ success: true, id: data.id });
+    }
+    return appsScriptRequest('addEquipment', data);
   },
 
   // ── Course ──────────────────────────────────────────────────────────────
