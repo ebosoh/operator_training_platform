@@ -6,7 +6,7 @@
 import API from './api.js';
 import I18n from './i18n.js';
 import { Auth } from './auth.js';
-import { Toast, Store, statusBadge } from './utils.js';
+import { Toast, Store, statusBadge, copyToClipboard, shareContent } from './utils.js';
 
 export async function renderProfile(params) {
   const t = (k) => I18n.t(k);
@@ -282,10 +282,20 @@ async function initProfileHandlers(enrollments, certificates, user) {
   // Share CV wall
   const shareCvBtn = document.getElementById('share-cv-btn');
   if (shareCvBtn) {
-    shareCvBtn.addEventListener('click', () => {
+    shareCvBtn.addEventListener('click', async () => {
       const shareUrl = `${window.location.origin}${window.location.pathname}#/cv/${user.id}`;
-      navigator.clipboard.writeText(shareUrl);
+      await copyToClipboard(shareUrl);
       Toast.success(I18n.t('profile.toast.cv_copied'), I18n.lang === 'no' ? '🔗 Del profil' : '🔗 Share CV');
+    });
+  }
+
+  // Share Diploma Wall button
+  const shareWallBtn = document.getElementById('share-diploma-wall');
+  if (shareWallBtn) {
+    shareWallBtn.addEventListener('click', async () => {
+      const shareUrl = `${window.location.origin}${window.location.pathname}#/cv/${user.id}`;
+      await copyToClipboard(shareUrl);
+      Toast.success(I18n.t('profile.toast.cv_copied'), I18n.lang === 'no' ? '🔗 Del diplomvegg' : '🔗 Share Diploma Wall');
     });
   }
 
@@ -294,12 +304,12 @@ async function initProfileHandlers(enrollments, certificates, user) {
 
   // Share Cert handler
   document.querySelectorAll('.share-cert-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       e.preventDefault();
       const certId = btn.dataset.id;
       const certNo = btn.dataset.no;
       const shareUrl = `${window.location.origin}${window.location.pathname}#/verify/${certNo}`;
-      navigator.clipboard.writeText(shareUrl);
+      await copyToClipboard(shareUrl);
       Toast.success(I18n.t('profile.toast.cert_copied').replace('{{no}}', certNo), I18n.lang === 'no' ? '🔗 Del diplom' : '🔗 Share Certificate');
     });
   });
