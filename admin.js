@@ -804,13 +804,16 @@ function initAdminHandlers(pendingList, equipmentList) {
       // Sanitize Unsplash page URLs to direct image hotlinks
       let finalImageUrl = image;
       if (image.includes('unsplash.com/photos/')) {
-        const match = image.match(/unsplash\.com\/photos\/([a-zA-Z0-9-]+)/);
+        const match = image.match(/unsplash\.com\/photos\/([a-zA-Z0-9-_]+)/);
         if (match && match[1]) {
           const segment = match[1];
           const parts = segment.split('-');
           const photoId = parts[parts.length - 1];
-          finalImageUrl = `https://images.unsplash.com/photo-${photoId}?w=600&q=70`;
+          finalImageUrl = `https://unsplash.com/photos/${photoId}/download?force=true`;
         }
+      } else if (image && !image.startsWith('http') && image.length >= 6 && image.length <= 15) {
+        // Alphanumeric code parsed directly
+        finalImageUrl = `https://unsplash.com/photos/${image}/download?force=true`;
       }
 
       // Compile dynamic manual sections
