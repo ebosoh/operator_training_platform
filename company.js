@@ -20,9 +20,9 @@ export async function renderCompany(params) {
       html: `
         <div class="empty-state" style="min-height:80vh">
           <div class="empty-state-icon">🔒</div>
-          <h2>Ingen tilgang</h2>
-          <p>Du må være registrert som bedriftsleder for å se denne siden.</p>
-          <a href="#/" class="btn btn-primary" style="margin-top:1rem">Gå til Hjem</a>
+          <h2>${lang === 'no' ? 'Ingen tilgang' : 'Access Denied'}</h2>
+          <p>${lang === 'no' ? 'Du må være registrert som bedriftsleder for å se denne siden.' : 'You must be registered as a company manager to view this page.'}</p>
+          <a href="#/" class="btn btn-primary" style="margin-top:1rem">${lang === 'no' ? 'Gå til Hjem' : 'Go to Home'}</a>
         </div>`,
       init: () => {}
     };
@@ -49,15 +49,15 @@ export async function renderCompany(params) {
           <div class="container">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
               <div>
-                <div class="section-label animate-fadeInDown" style="color:var(--color-gold)">🏢 Bedriftsportal · ${company.name}</div>
+                <div class="section-label animate-fadeInDown" style="color:var(--color-gold)">🏢 ${lang === 'no' ? 'Bedriftsportal' : 'Company Portal'} · ${company.name}</div>
                 <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:800;margin:var(--space-2) 0 0;color:#fff" class="animate-fadeInUp">
-                  HMS & Opplæringsstyring
+                  ${lang === 'no' ? 'HMS & Opplæringsstyring' : 'HSE & Training Management'}
                 </h1>
-                <p style="color:var(--color-text-muted);font-size:var(--text-xs);margin-top:0.25rem">Org.nr: ${company.orgNo} · Faktureringsmetode: ${company.billingMethod === 'invoice' ? 'Faktura (Netto 30)' : 'Kort/Vipps'}</p>
+                <p style="color:var(--color-text-muted);font-size:var(--text-xs);margin-top:0.25rem">Org.nr: ${company.orgNo} · ${lang === 'no' ? 'Faktureringsmetode' : 'Billing Method'}: ${company.billingMethod === 'invoice' ? (lang === 'no' ? 'Faktura (Netto 30)' : 'Invoice (Net 30)') : (lang === 'no' ? 'Kort/Vipps' : 'Card/Vipps')}</p>
               </div>
               <div>
                 <button class="btn btn-gold btn-sm hover-glow-gold" id="company-export-hse-btn">
-                  📋 Last ned HMS-rapport (CSV)
+                  📋 ${lang === 'no' ? 'Last ned HMS-rapport' : 'Download HSE Report'} (CSV)
                 </button>
               </div>
             </div>

@@ -258,16 +258,16 @@ function renderHomeView() {
     <section class="section" style="background:var(--color-bg)">
       <div class="container">
         <div class="section-header" style="text-align:center">
-          <div class="section-label" style="justify-content:center">Slik fungerer det</div>
-          <h2 class="section-title">Fra QR-kode til diplom<br><span class="text-gradient-gold">på under én time</span></h2>
+          <div class="section-label" style="justify-content:center">${t('home.how_it_works.title')}</div>
+          <h2 class="section-title">${t('home.how_it_works.subtitle')}</h2>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-6);margin-top:var(--space-8)">
           ${[
-            { step:'01', icon:'📱', title:'Skann QR', desc:'Skann QR-koden på maskinen eller søk i katalogen for å finne riktig opplæring.' },
-            { step:'02', icon:'💳', title:'Betal', desc:'299 NOK per typegodkjenning. Kortbetaling, Vipps eller faktura for bedrifter.' },
-            { step:'03', icon:'📖', title:'Les manualen', desc:'Gå gjennom sikkerhetsmanualen og se instruksjonsvideoer på din mobil.' },
-            { step:'04', icon:'✍️', title:'Test & Signer', desc:'Bestå 3-4 sikkerhetsspørsmål og signer digitalt — klar på sekunder.' },
-            { step:'05', icon:'🏆', title:'Få diplom', desc:'Få offisielt diplom tilsendt på e-post. Del på CV og LinkedIn.' },
+            { step:'01', icon:'📱', title:t('home.how_it_works.step1.title'), desc:t('home.how_it_works.step1.desc') },
+            { step:'02', icon:'💳', title:t('home.how_it_works.step2.title'), desc:t('home.how_it_works.step2.desc') },
+            { step:'03', icon:'📖', title:t('home.how_it_works.step3.title'), desc:t('home.how_it_works.step3.desc') },
+            { step:'04', icon:'✍️', title:t('home.how_it_works.step4.title'), desc:t('home.how_it_works.step4.desc') },
+            { step:'05', icon:'🏆', title:t('home.how_it_works.step5.title'), desc:t('home.how_it_works.step5.desc') },
           ].map((s, i) => `
             <div class="card card-interactive hover-lift animate-fadeInUp delay-${(i+1)*100}" style="position:relative;overflow:visible">
               <div style="position:absolute;top:-1rem;left:1.5rem;font-family:var(--font-heading);font-size:0.7rem;font-weight:900;color:var(--color-primary);letter-spacing:0.1em;opacity:0.7">${s.step}</div>
@@ -287,10 +287,10 @@ function renderHomeView() {
       <div class="container">
         <div class="section-header" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem">
           <div>
-            <div class="section-label">Utstyrskategorier</div>
-            <h2 class="section-title" style="margin-bottom:0">Finn din maskin</h2>
+            <div class="section-label">${t('home.categories.tag')}</div>
+            <h2 class="section-title" style="margin-bottom:0">${t('home.categories.title')}</h2>
           </div>
-          <a href="#/catalog" class="btn btn-ghost">Se alle 140+ →</a>
+          <a href="#/catalog" class="btn btn-ghost">${t('home.categories.see_all')}</a>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--space-5);margin-top:var(--space-8)">
           ${[
@@ -328,39 +328,39 @@ function renderHomeView() {
     <!-- PRICING SECTION -->
     <section class="section" style="background:var(--color-bg)">
       <div class="container-sm" style="text-align:center">
-        <div class="section-label" style="justify-content:center">Priser</div>
-        <h2 class="section-title">Enkel og transparent<br><span class="text-gradient-red">prising</span></h2>
+        <div class="section-label" style="justify-content:center">${t('nav.diplomas')}</div>
+        <h2 class="section-title">${t('home.pricing.title')}</h2>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-6);margin-top:var(--space-10)">
           <!-- Per Course -->
           <div class="card" style="position:relative;padding:var(--space-8)">
             <div style="font-size:2.5rem;margin-bottom:var(--space-4)">⚡</div>
-            <h3 style="font-family:var(--font-heading);font-size:var(--text-xl);font-weight:800;margin-bottom:var(--space-2)">Per Kurs</h3>
+            <h3 style="font-family:var(--font-heading);font-size:var(--text-xl);font-weight:800;margin-bottom:var(--space-2)">${t('home.pricing.per_course.title')}</h3>
             <div style="font-family:var(--font-heading);font-size:var(--text-4xl);font-weight:900;color:var(--color-gold);margin:var(--space-4) 0">
               299 <span style="font-size:var(--text-lg);color:var(--color-text-muted)">NOK</span>
             </div>
-            <p style="color:var(--color-text-muted);font-size:var(--text-sm);margin-bottom:var(--space-6)">inkl. 25% MVA · Livstidstilgang</p>
+            <p style="color:var(--color-text-muted);font-size:var(--text-sm);margin-bottom:var(--space-6)">${t('home.pricing.per_course.sub')}</p>
             <ul style="display:flex;flex-direction:column;gap:var(--space-3);text-align:left;margin-bottom:var(--space-6)">
-              ${['✅ Øyeblikkelig tilgang', '✅ Diplom + digital signatur', '✅ Del til CV', '✅ Kortbetaling / Vipps'].map(f => `
+              ${[t('home.pricing.per_course.f1'), t('home.pricing.per_course.f2'), t('home.pricing.per_course.f3'), t('home.pricing.per_course.f4')].map(f => `
                 <li style="font-size:var(--text-sm);color:var(--color-text-secondary)">${f}</li>
               `).join('')}
             </ul>
-            <a href="#/register" class="btn btn-primary btn-block">Kom i gang →</a>
+            <a href="#/register" class="btn btn-primary btn-block">${t('home.pricing.per_course.cta')}</a>
           </div>
           <!-- Business -->
           <div class="card card-premium" style="position:relative;padding:var(--space-8)">
-            <div style="position:absolute;top:var(--space-4);right:var(--space-4)" class="badge badge-gold">Populær</div>
+            <div style="position:absolute;top:var(--space-4);right:var(--space-4)" class="badge badge-gold">${t('home.pricing.business.badge')}</div>
             <div style="font-size:2.5rem;margin-bottom:var(--space-4)">🏢</div>
-            <h3 style="font-family:var(--font-heading);font-size:var(--text-xl);font-weight:800;margin-bottom:var(--space-2)">Bedrift</h3>
+            <h3 style="font-family:var(--font-heading);font-size:var(--text-xl);font-weight:800;margin-bottom:var(--space-2)">${t('home.pricing.business.title')}</h3>
             <div style="font-family:var(--font-heading);font-size:var(--text-4xl);font-weight:900;color:var(--color-gold);margin:var(--space-4) 0">
-              Faktura <span style="font-size:var(--text-lg);color:var(--color-text-muted)">30 dager</span>
+              ${t('home.pricing.business.price')}
             </div>
-            <p style="color:var(--color-text-muted);font-size:var(--text-sm);margin-bottom:var(--space-6)">299 NOK/kurs · Kredittkjøp tilgjengelig</p>
+            <p style="color:var(--color-text-muted);font-size:var(--text-sm);margin-bottom:var(--space-6)">${t('home.pricing.business.sub')}</p>
             <ul style="display:flex;flex-direction:column;gap:var(--space-3);text-align:left;margin-bottom:var(--space-6)">
-              ${['✅ Alt i Per Kurs', '✅ Felles faktura for hele teamet', '✅ Oversikt over teamets fremdrift', '✅ HSE-rapporter (PDF/CSV)', '✅ API-integrasjon (Winlet)'].map(f => `
+              ${[t('home.pricing.business.f1'), t('home.pricing.business.f2'), t('home.pricing.business.f3'), t('home.pricing.business.f4'), t('home.pricing.business.f5')].map(f => `
                 <li style="font-size:var(--text-sm);color:var(--color-text-secondary)">${f}</li>
               `).join('')}
             </ul>
-            <a href="#/register" class="btn btn-gold btn-block">Kontakt oss →</a>
+            <a href="#/register" class="btn btn-gold btn-block">${t('home.pricing.business.cta')}</a>
           </div>
         </div>
       </div>
@@ -371,14 +371,14 @@ function renderHomeView() {
       <div style="position:absolute;inset:0;opacity:0.1;background:url('hero_bg.png') center/cover"></div>
       <div class="container" style="text-align:center;position:relative">
         <h2 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:900;color:#fff;margin-bottom:1rem">
-          Klar for å bli sertifisert?
+          ${t('home.cta.title')}
         </h2>
         <p style="color:rgba(255,255,255,0.8);font-size:var(--text-lg);margin-bottom:2rem">
-          Slut deg til 2 400+ sertifiserte operatører i dag.
+          ${t('home.cta.subtitle')}
         </p>
         <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-          <a href="#/register" class="btn btn-gold btn-xl hover-glow-gold">🚀 Start gratis registrering</a>
-          <a href="#/catalog" class="btn btn-ghost btn-lg" style="border-color:rgba(255,255,255,0.3);color:white">Se kurskataloget</a>
+          <a href="#/register" class="btn btn-gold btn-xl hover-glow-gold">${t('home.cta.btn1')}</a>
+          <a href="#/catalog" class="btn btn-ghost btn-lg" style="border-color:rgba(255,255,255,0.3);color:white">${t('home.cta.btn2')}</a>
         </div>
       </div>
     </section>
@@ -396,13 +396,13 @@ function renderHomeView() {
               </div>
             </div>
             <p style="color:var(--color-text-muted);font-size:var(--text-sm);line-height:1.7;max-width:280px">
-              Norges ledende digitale plattform for typegodkjenning av tungt maskineri. Sikker, rask og lovpålagt.
+              ${t('footer.desc')}
             </p>
           </div>
           ${[
-            { title:'Plattform', links:['Kurskataloget', 'Priser', 'For bedrifter', 'API'] },
-            { title:'Support', links:['Hjelp', 'Kontakt', 'Personvern', 'Vilkår'] },
-            { title:'Oslo Liftutleie', links:['Om oss', 'Lifter', 'Maskiner', 'Truck/Minikran'] },
+            { title:t('footer.col1.title'), links:[t('footer.col1.l1'), t('footer.col1.l2'), t('footer.col1.l3'), t('footer.col1.l4')] },
+            { title:t('footer.col2.title'), links:[t('footer.col2.l1'), t('footer.col2.l2'), t('footer.col2.l3'), t('footer.col2.l4')] },
+            { title:t('footer.col3.title'), links:[t('footer.col3.l1'), t('footer.col3.l2'), t('footer.col3.l3'), t('footer.col3.l4')] },
           ].map(col => `
             <div>
               <h4 style="font-family:var(--font-heading);font-size:var(--text-sm);font-weight:700;margin-bottom:1rem;color:var(--color-text-primary)">${col.title}</h4>
@@ -414,9 +414,9 @@ function renderHomeView() {
         </div>
         <div class="divider"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
-          <p style="color:var(--color-text-muted);font-size:var(--text-xs)">© 2024 Oslo Liftutleie AS. Alle rettigheter reservert. · Org.nr: 123 456 789 · Sikkerhet & Opplæring</p>
+          <p style="color:var(--color-text-muted);font-size:var(--text-xs)">${t('footer.rights')}</p>
           <div style="display:flex;gap:1rem">
-            ${['🇳🇴 Norsk', 'GDPR', 'Personvern'].map(l => `<span style="color:var(--color-text-muted);font-size:var(--text-xs)">${l}</span>`).join('<span style="color:var(--color-border)">·</span>')}
+            ${[I18n.lang === 'no' ? '🇳🇴 Norsk' : '🇬🇧 English', 'GDPR', t('footer.col2.l3')].map(l => `<span style="color:var(--color-text-muted);font-size:var(--text-xs)">${l}</span>`).join('<span style="color:var(--color-border)">·</span>')}
           </div>
         </div>
       </div>
@@ -499,12 +499,13 @@ function animateCount(el, target, suffix) {
 
 // ── Not Found View ────────────────────────────────────────────────────────────
 function renderNotFound() {
+  const isNo = I18n.lang === 'no';
   return `
     <div class="empty-state min-h-screen">
       <div style="font-size:5rem">🔍</div>
-      <h1 class="section-title">404 — Side ikke funnet</h1>
-      <p class="empty-state-desc">Siden du leter etter finnes ikke. Gå tilbake til forsiden.</p>
-      <a href="#/" class="btn btn-primary" style="margin-top:1.5rem">← Til forsiden</a>
+      <h1 class="section-title">${isNo ? '404 — Side ikke funnet' : '404 — Page not found'}</h1>
+      <p class="empty-state-desc">${isNo ? 'Siden du leter etter finnes ikke. Gå tilbake til forsiden.' : 'The page you are looking for does not exist. Go back to the home page.'}</p>
+      <a href="#/" class="btn btn-primary" style="margin-top:1.5rem">${isNo ? '← Til forsiden' : '← Back to home'}</a>
     </div>`;
 }
 
@@ -666,13 +667,13 @@ const App = {
         authArea.innerHTML = `
           <div style="display:flex;align-items:center;gap:0.75rem">
             <a href="#/profile" class="nav-avatar" title="${user.name}">${user.avatar || user.name?.slice(0,2).toUpperCase()}</a>
-            <button onclick="window.__app?.logout()" class="btn btn-ghost btn-sm hide-mobile" style="color:var(--color-danger);border-color:rgba(231,76,60,0.2);padding:0.4rem 0.8rem;font-size:var(--text-xs);font-weight:600">🚪 Logg ut</button>
+            <button onclick="window.__app?.logout()" class="btn btn-ghost btn-sm hide-mobile" style="color:var(--color-danger);border-color:rgba(231,76,60,0.2);padding:0.4rem 0.8rem;font-size:var(--text-xs);font-weight:600">🚪 ${I18n.t('nav.logout')}</button>
           </div>`;
       } else {
         authArea.innerHTML = `
           <div style="display:flex;align-items:center;gap:0.5rem">
-            <a href="#/login" class="btn btn-ghost btn-sm hide-mobile">Logg inn</a>
-            <a href="#/register" class="btn btn-primary btn-sm">Registrer</a>
+            <a href="#/login" class="btn btn-ghost btn-sm hide-mobile">${I18n.t('nav.login')}</a>
+            <a href="#/register" class="btn btn-primary btn-sm">${I18n.t('nav.register')}</a>
           </div>`;
       }
     }
@@ -742,10 +743,10 @@ const App = {
             <div style="font-size:var(--text-xs);color:var(--color-text-muted)">${user.email}</div>
           </div>
         </div>
-        <button onclick="window.__app?.logout()" class="btn btn-ghost btn-sm btn-block" style="color:var(--color-danger)">🚪 Logg ut</button>
+        <button onclick="window.__app?.logout()" class="btn btn-ghost btn-sm btn-block" style="color:var(--color-danger)">🚪 ${I18n.t('nav.logout')}</button>
       ` : `
-        <a href="#/login" class="btn btn-primary btn-block" onclick="window.__app?.closeDrawer()">Logg inn</a>
-        <a href="#/register" class="btn btn-ghost btn-block" style="margin-top:0.5rem" onclick="window.__app?.closeDrawer()">Registrer deg</a>
+        <a href="#/login" class="btn btn-primary btn-block" onclick="window.__app?.closeDrawer()">${I18n.t('nav.login')}</a>
+        <a href="#/register" class="btn btn-ghost btn-block" style="margin-top:0.5rem" onclick="window.__app?.closeDrawer()">${I18n.t('nav.register')}</a>
       `;
     }
   },
@@ -775,13 +776,14 @@ const App = {
     I18n.toggle();
     const toggle = document.getElementById('lang-toggle');
     if (toggle) toggle.textContent = I18n.lang === 'no' ? '🇬🇧 EN' : '🇳🇴 NO';
+    Router.dispatch();
     Toast.info(I18n.lang === 'no' ? 'Byttet til norsk' : 'Switched to English');
   },
 
   logout() {
     this.closeDrawer();
     Auth.logout();
-    Toast.info('Du er logget ut');
+    Toast.info(I18n.lang === 'no' ? 'Du er logget ut' : 'You have been logged out');
   },
 
   setupEventListeners() {

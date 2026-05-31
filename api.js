@@ -1,3 +1,6 @@
+import I18n from './i18n.js';
+import { Modal } from './utils.js';
+
 /**
  * api.js — API Abstraction Layer
  * Typeopplæring.no Safety Training Platform
@@ -11,7 +14,12 @@ const API_CONFIG = {
   // Replace with your deployed Apps Script URL
   BASE_URL: 'https://script.google.com/macros/s/AKfycbzN1CdYD9PtQ1fCkWTywrBqnR8XlzU5gKIn18t9JbHzTpOE9ZrdOHUf0feWT8RbQq7L/exec',
   TIMEOUT: 15000,
-  USE_MOCK: false, // Set to false when backend is ready
+  get USE_MOCK() {
+    return localStorage.getItem('ol_use_mock') === 'true';
+  },
+  set USE_MOCK(val) {
+    localStorage.setItem('ol_use_mock', String(val));
+  }
 };
 
 // ── Mock Data Store ──────────────────────────────────────────────────────────
@@ -328,6 +336,98 @@ const MockData = {
   ],
 };
 
+// ── Connection Troubleshooter Modal ──────────────────────────────────────────
+function showConnectionTroubleshooter() {
+  if (document.getElementById('connection-troubleshoot-modal')) return;
+
+  const isNo = I18n.lang === 'no';
+  const title = isNo ? 'Tilkoblingsfeil (Google Sheets)' : 'Connection Error (Google Sheets)';
+  
+  const body = isNo ? `
+    <div style="font-size:var(--text-sm);line-height:1.6;color:var(--color-text-secondary)">
+      <p style="margin-bottom:1rem;font-weight:600;color:white">
+        Appen klarte ikke å kommunisere med Google Apps Script-backend. Dette skyldes vanligvis en av følgende årsaker:
+      </p>
+      <ul style="padding-left:1.25rem;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:0.75rem;text-align:left">
+        <li>
+          <strong>1. Feil publiseringsinnstillinger:</strong><br>
+          Når du distribuerer Google Apps Script som en nettapp, må du sette <strong>"Hvem som har tilgang"</strong> (Who has access) til <strong>"Alle"</strong> (Anyone). Hvis ikke, blokkerer Google forespørselen.
+        </li>
+        <li>
+          <strong>2. Feil URL-type (/dev i stedet for /exec):</strong><br>
+          Sørg for at <code>BASE_URL</code> i <code>api.js</code> slutter på <code>/exec</code> og IKKE <code>/dev</code>. Test-URLen (/dev) krever innlogging og er blokkert av CORS.
+        </li>
+        <li>
+          <strong>3. Frittstående script (Standalone):</strong><br>
+          Hvis du opprettet skriptet direkte i Google Drive, kan det ikke koble seg til regnearket automatisk. Åpne Google Sheet, velg <strong>Utvidelser &gt; Apps Script</strong>, og lim inn <code>Code.gs</code> koden der.
+        </li>
+        <li>
+          <strong>4. Manglende autorisasjon:</strong><br>
+          Åpne skriptet i Google Sheets og kjør en testfunksjon (f.eks. <code>initializeDatabaseSchema</code>) manuelt for å godkjenne Google-kontoens tilgang.
+        </li>
+      </ul>
+      <p style="margin-bottom:1rem">
+        For å utforske appen med en gang uten å fikse databasen først, kan du bytte til den lokale <strong>Frakoblede Demo-modusen</strong>. Alle funksjoner (kurs, quiz, betaling, signering og admin) fungerer perfekt med simulerte data lagret i nettleseren din!
+      </p>
+    </div>
+  ` : `
+    <div style="font-size:var(--text-sm);line-height:1.6;color:var(--color-text-secondary)">
+      <p style="margin-bottom:1rem;font-weight:600;color:white">
+        The application failed to communicate with your Google Apps Script backend. This is usually caused by:
+      </p>
+      <ul style="padding-left:1.25rem;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:0.75rem;text-align:left">
+        <li>
+          <strong>1. Incorrect Access Settings:</strong><br>
+          When deploying your Apps Script as a Web App, you must set <strong>"Who has access"</strong> to <strong>"Anyone"</strong>. If set to restricted, Google will block the CORS request.
+        </li>
+        <li>
+          <strong>2. Using Developer URL (/dev instead of /exec):</strong><br>
+          Ensure that the <code>BASE_URL</code> in <code>api.js</code> ends with <code>/exec</code> and NOT <code>/dev</code>. The developer URL requires developer login and is blocked by CORS.
+        </li>
+        <li>
+          <strong>3. Standalone Script Error:</strong><br>
+          If you created the script standalone in Drive, it cannot auto-bind to a sheet. Open your Google Sheet, click <strong>Extensions &gt; Apps Script</strong>, and paste the <code>Code.gs</code> code there.
+        </li>
+        <li>
+          <strong>4. Missing Authorization:</strong><br>
+          Open the Apps Script editor and run any function (like <code>initializeDatabaseSchema</code>) manually to grant required Sheets and Email permissions.
+        </li>
+      </ul>
+      <p style="margin-bottom:1rem">
+        To explore the app immediately without configuring the database, you can switch to the local <strong>Offline Demo Mode</strong>. All modules (courses, assessments, Stripe/Vipps payments, digital signatures, and dashboards) are fully functional using locally simulated data!
+      </p>
+    </div>
+  `;
+
+  const footer = `
+    <div style="display:flex;gap:0.75rem;justify-content:flex-end;width:100%">
+      <button class="btn btn-ghost" onclick="document.getElementById('connection-troubleshoot-modal').classList.remove('open'); document.body.style.overflow=''">
+        ${isNo ? 'Lukk' : 'Close'}
+      </button>
+      <button class="btn btn-gold" id="btn-switch-to-mock" style="font-weight:700">
+        ${isNo ? '🔑 Bytt til Demo-modus (Mock)' : '🔑 Switch to Demo Mode (Mock)'}
+      </button>
+    </div>
+  `;
+
+  Modal.create({
+    title,
+    body,
+    footer,
+    id: 'connection-troubleshoot-modal'
+  });
+
+  const switchBtn = document.getElementById('btn-switch-to-mock');
+  if (switchBtn) {
+    switchBtn.onclick = () => {
+      localStorage.setItem('ol_use_mock', 'true');
+      document.getElementById('connection-troubleshoot-modal').classList.remove('open');
+      document.body.style.overflow = '';
+      window.location.reload();
+    };
+  }
+}
+
 // ── HTTP Helper ──────────────────────────────────────────────────────────────
 async function appsScriptRequest(action, payload = {}) {
   const controller = new AbortController();
@@ -350,6 +450,12 @@ async function appsScriptRequest(action, payload = {}) {
     return data.data;
   } catch (err) {
     clearTimeout(timeout);
+    
+    // Catch fetch network errors or timeout aborts
+    if (err.message === 'Failed to fetch' || err.name === 'AbortError' || err.message.includes('NetworkError') || err.message.includes('fetch')) {
+      showConnectionTroubleshooter();
+    }
+    
     throw err;
   }
 }
@@ -446,23 +552,21 @@ const API = {
 
   // ── Course ──────────────────────────────────────────────────────────────
   async getCourseContent(equipmentId) {
-    if (API_CONFIG.USE_MOCK) {
-      const content = MockData.manualContent[equipmentId];
-      if (!content) {
-        // Generate placeholder sections for equipment without full content
-        const eq = MockData.equipment.find(e => e.id === equipmentId);
-        const sectionCount = Math.min(5, Math.ceil((eq?.manualPages || 48) / 12));
-        const sections = Array.from({ length: sectionCount }, (_, i) => ({
-          id: `s${i+1}`,
-          title: `${i+1}. Seksjon ${i+1}`,
-          titleEn: `${i+1}. Section ${i+1}`,
-          content: `<p>Innhold for seksjon ${i+1} kommer snart. Dette er en demo-side.</p><p>I produksjon vil dette inneholde det komplette manualmaterialet fra Oslo Liftutleie.</p>`
-        }));
-        return mockDelay({ sections });
-      }
-      return mockDelay(content);
+    // Static training manuals are loaded locally from the PWA assets for instant offline speed
+    const content = MockData.manualContent[equipmentId];
+    if (!content) {
+      const eq = MockData.equipment.find(e => e.id === equipmentId) || 
+                 (await this.getEquipmentById(equipmentId).catch(() => null));
+      const sectionCount = Math.min(5, Math.ceil((eq?.manualPages || 48) / 12));
+      const sections = Array.from({ length: sectionCount }, (_, i) => ({
+        id: `s${i+1}`,
+        title: `${i+1}. Seksjon ${i+1}`,
+        titleEn: `${i+1}. Section ${i+1}`,
+        content: `<p>Innhold for seksjon ${i+1} pågår. Dette er en standard typeopplæringsside for Oslo Liftutleie.</p><p>Sørg for å følge alle sikkerhetsprosedyrer og fallsikringsinstrukser ved arbeid i høyden.</p>`
+      }));
+      return mockDelay({ sections });
     }
-    return appsScriptRequest('getCourse', { equipmentId });
+    return mockDelay(content);
   },
 
   async enroll(userId, equipmentId, paymentRef) {
@@ -494,37 +598,34 @@ const API = {
 
   // ── Assessment ──────────────────────────────────────────────────────────
   async getAssessmentQuestions(equipmentId) {
-    if (API_CONFIG.USE_MOCK) {
-      const questions = MockData.assessmentQuestions[equipmentId];
-      if (!questions) {
-        // Generic fallback questions
-        return mockDelay([
-          {
-            id: 'gq1',
-            question: 'Hva er det første du skal gjøre før du bruker denne maskinen?',
-            questionEn: 'What is the first thing you should do before using this machine?',
-            options: ['Start motoren', 'Utføre forhåndskontroll', 'Sjekke mobilen', 'Hoppe på'],
-            correct: 1
-          },
-          {
-            id: 'gq2',
-            question: 'Hva gjør du ved en nødsituasjon?',
-            questionEn: 'What do you do in an emergency?',
-            options: ['Ignorer det', 'Trykk nødstopp og varsle andre', 'Løp', 'Ingenting'],
-            correct: 1
-          },
-          {
-            id: 'gq3',
-            question: 'Hvem har ansvar for sikkerheten ved bruk av maskinen?',
-            questionEn: 'Who is responsible for safety when using the machine?',
-            options: ['Utleier', 'Kollegaene', 'Operatøren selv', 'Ingen'],
-            correct: 2
-          },
-        ]);
-      }
-      return mockDelay(questions);
+    // Static safety questions are loaded locally from the PWA assets
+    const questions = MockData.assessmentQuestions[equipmentId];
+    if (!questions) {
+      return mockDelay([
+        {
+          id: 'gq1',
+          question: 'Hva er det første du skal gjøre før du bruker denne maskinen?',
+          questionEn: 'What is the first thing you should do before using this machine?',
+          options: ['Start motoren', 'Utføre forhåndskontroll', 'Sjekke mobilen', 'Hoppe på'],
+          correct: 1
+        },
+        {
+          id: 'gq2',
+          question: 'Hva gjør du ved en nødsituasjon?',
+          questionEn: 'What do you do in an emergency?',
+          options: ['Ignorer det', 'Trykk nødstopp og varsle andre', 'Løp', 'Ingenting'],
+          correct: 1
+        },
+        {
+          id: 'gq3',
+          question: 'Hvem har ansvar for sikkerheten ved bruk av maskinen?',
+          questionEn: 'Who is responsible for safety when using the machine?',
+          options: ['Utleier', 'Kollegaene', 'Operatøren selv', 'Ingen'],
+          correct: 2
+        },
+      ]);
     }
-    return appsScriptRequest('getAssessmentQuestions', { equipmentId });
+    return mockDelay(questions);
   },
 
   async submitAssessment(enrollmentId, answers) {

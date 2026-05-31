@@ -20,9 +20,9 @@ export async function renderAdmin(params) {
       html: `
         <div class="empty-state" style="min-height:80vh">
           <div class="empty-state-icon">🔒</div>
-          <h2>Ingen tilgang</h2>
-          <p>Du må være registrert som systemadministrator for å se denne siden.</p>
-          <a href="#/" class="btn btn-primary" style="margin-top:1rem">Gå til Hjem</a>
+          <h2>${lang === 'no' ? 'Ingen tilgang' : 'Access Denied'}</h2>
+          <p>${lang === 'no' ? 'Du må være registrert som systemadministrator for å se denne siden.' : 'You must be registered as a system administrator to view this page.'}</p>
+          <a href="#/" class="btn btn-primary" style="margin-top:1rem">${lang === 'no' ? 'Gå til Hjem' : 'Go to Home'}</a>
         </div>`,
       init: () => {}
     };
@@ -53,9 +53,9 @@ export async function renderAdmin(params) {
           <div class="container">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
               <div>
-                <div class="section-label animate-fadeInDown" style="color:var(--color-gold)">⚙️ Oslo Liftutleie · Administrator</div>
+                <div class="section-label animate-fadeInDown" style="color:var(--color-gold)">⚙️ Oslo Liftutleie · ${lang === 'no' ? 'Administrator' : 'Administrator'}</div>
                 <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:800;margin:var(--space-2) 0 0;color:#fff" class="animate-fadeInUp">
-                  Systemadministrasjon
+                  ${lang === 'no' ? 'Systemadministrasjon' : 'System Administration'}
                 </h1>
               </div>
               <div>
@@ -93,11 +93,11 @@ export async function renderAdmin(params) {
             <!-- Stats Grid -->
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-5);margin-bottom:var(--space-8)">
               ${[
-                { icon: '👥', label: 'Brukere totalt', val: stats.totalUsers, color: 'var(--color-primary)' },
-                { icon: '📜', label: 'Godkjenninger', val: stats.totalCerts, color: 'var(--color-gold)' },
-                { icon: '⏳', label: 'Venter signatur', val: pendingList.length, color: 'var(--color-warning)' },
-                { icon: '💳', label: 'Inntekt denne mnd', val: `${(stats.revenueThisMonth / 100).toLocaleString()} NOK`, color: 'var(--color-success)' },
-                { icon: '📈', label: 'Bestått-andel', val: `${stats.passRate}%`, color: 'var(--color-success)' },
+                { icon: '👥', label: lang === 'no' ? 'Brukere totalt' : 'Total Users', val: stats.totalUsers, color: 'var(--color-primary)' },
+                { icon: '📜', label: lang === 'no' ? 'Godkjenninger' : 'Approvals', val: stats.totalCerts, color: 'var(--color-gold)' },
+                { icon: '⏳', label: lang === 'no' ? 'Venter signatur' : 'Awaiting Signature', val: pendingList.length, color: 'var(--color-warning)' },
+                { icon: '💳', label: lang === 'no' ? 'Inntekt denne mnd' : 'Revenue This Month', val: `${(stats.revenueThisMonth / 100).toLocaleString()} NOK`, color: 'var(--color-success)' },
+                { icon: '📈', label: lang === 'no' ? 'Bestått-andel' : 'Pass Rate', val: `${stats.passRate}%`, color: 'var(--color-success)' },
               ].map(s => `
                 <div class="card">
                   <div class="card-body" style="padding:var(--space-5);display:flex;align-items:center;gap:1rem">
