@@ -29,7 +29,7 @@ export async function renderPayment(params) {
   try {
     equipment = await API.getEquipmentById(equipmentId);
   } catch (err) {
-    return { html: '<div class="empty-state" style="min-height:80vh"><div class="empty-state-icon">⚠️</div><h2>Maskin ikke funnet</h2></div>', init: () => {} };
+    return { html: `<div class="empty-state" style="min-height:80vh"><div class="empty-state-icon">⚠️</div><h2>${t('payment.not_found')}</h2></div>`, init: () => {} };
   }
 
   // Check if already paid
@@ -42,7 +42,7 @@ export async function renderPayment(params) {
 
   if (alreadyEnrolled) {
     setTimeout(() => { window.location.hash = `#/course/${equipmentId}`; }, 100);
-    return { html: '<div class="empty-state" style="min-height:80vh"><div class="empty-state-icon">✅</div><h2>Du har allerede tilgang. Omdirigerer...</h2></div>', init: () => {} };
+    return { html: `<div class="empty-state" style="min-height:80vh"><div class="empty-state-icon">✅</div><h2>${t('payment.already_enrolled')}</h2></div>`, init: () => {} };
   }
 
   const eqName = lang === 'no' ? equipment.nameNo : equipment.name;
@@ -56,32 +56,32 @@ export async function renderPayment(params) {
 
           <!-- Breadcrumb -->
           <div style="margin-bottom:var(--space-6)">
-            <a href="#/equipment/${equipmentId}" style="color:var(--color-text-muted);font-size:var(--text-sm);text-decoration:none">← Tilbake til maskin</a>
+            <a href="#/equipment/${equipmentId}" style="color:var(--color-text-muted);font-size:var(--text-sm);text-decoration:none">${t('payment.back_to_machine')}</a>
           </div>
 
           <div style="display:grid;grid-template-columns:1fr;gap:var(--space-6)" id="payment-layout">
 
-            <!-- Order Summary (Right side on desktop) -->
+            <!-- Order Summary (Right Side on Desktop) -->
             <div id="order-summary-panel">
               <div class="card card-premium">
                 <div class="card-header">
-                  <h3 style="font-family:var(--font-heading);font-weight:700">📋 Ordresammendrag</h3>
+                  <h3 style="font-family:var(--font-heading);font-weight:700">${t('payment.summary_title')}</h3>
                 </div>
                 <div class="card-body">
-                  <!-- Equipment info -->
+                   <!-- Equipment info -->
                   <div style="display:flex;gap:var(--space-3);align-items:center;margin-bottom:var(--space-5);padding-bottom:var(--space-4);border-bottom:1px solid var(--color-border)">
                     <img src="${equipment.image}" alt="${eqName}" style="width:72px;height:56px;object-fit:cover;border-radius:var(--radius-md);flex-shrink:0"
                       onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&q=60'" />
                     <div>
                       <div style="font-weight:700;font-size:var(--text-sm)">${eqName}</div>
-                      <div style="font-size:var(--text-xs);color:var(--color-text-muted)">${equipment.subcategory} · ${equipment.manualPages} sider</div>
+                      <div style="font-size:var(--text-xs);color:var(--color-text-muted)">${equipment.subcategory} · ${equipment.manualPages} ${t('payment.pages_label')}</div>
                     </div>
                   </div>
-
+ 
                   <!-- Price breakdown -->
                   ${[
-                    { label: 'Kursavgift', value: '239,20 NOK' },
-                    { label: 'MVA (25%)', value: '59,80 NOK' },
+                    { label: t('payment.fee_label'), value: '239,20 NOK' },
+                    { label: t('payment.vat_label'), value: '59,80 NOK' },
                   ].map(row => `
                     <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-3)">
                       <span style="color:var(--color-text-secondary);font-size:var(--text-sm)">${row.label}</span>
@@ -90,24 +90,24 @@ export async function renderPayment(params) {
                   `).join('')}
                   <div style="height:1px;background:var(--color-border);margin:var(--space-3) 0"></div>
                   <div style="display:flex;justify-content:space-between;align-items:center">
-                    <span style="font-weight:700">Totalt</span>
+                    <span style="font-weight:700">${t('payment.total_label')}</span>
                     <span style="font-family:var(--font-heading);font-size:var(--text-2xl);font-weight:900;color:var(--color-gold)">299 NOK</span>
                   </div>
-                  <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:4px">inkl. 25% MVA · Livstidstilgang</div>
+                  <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:4px">${t('payment.vat_included')}</div>
                 </div>
               </div>
-
+ 
               <!-- What you get -->
               <div class="card" style="margin-top:var(--space-4)">
                 <div class="card-body">
-                  <h4 style="font-family:var(--font-heading);font-weight:700;font-size:var(--text-sm);margin-bottom:var(--space-3)">Inkludert:</h4>
+                  <h4 style="font-family:var(--font-heading);font-weight:700;font-size:var(--text-sm);margin-bottom:var(--space-3)">${t('payment.included_title')}</h4>
                   ${[
-                    '📄 Digital brukermanual (livstidstilgang)',
-                    equipment.videoId ? '🎬 Instruksjonsvideo' : null,
-                    '🧪 Sikkerhetstest',
-                    '✍️ Digital signatur',
-                    '🏆 Offisielt diplom + e-post',
-                    '🔗 Del til CV og LinkedIn',
+                    t('payment.inc.manual'),
+                    equipment.videoId ? t('payment.inc.video') : null,
+                    t('payment.inc.test'),
+                    t('payment.inc.sig'),
+                    t('payment.inc.cert'),
+                    t('payment.inc.share'),
                   ].filter(Boolean).map(item => `
                     <div style="display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2);font-size:var(--text-xs);color:var(--color-text-secondary)">${item}</div>
                   `).join('')}
@@ -131,16 +131,16 @@ export async function renderPayment(params) {
                 <form id="card-form" novalidate>
                   <div style="display:flex;flex-direction:column;gap:var(--space-4)">
                     <div class="form-group">
-                      <label class="form-label required">Kortinnehaver</label>
+                      <label class="form-label required">${t('payment.card.holder')}</label>
                       <div class="input-wrapper">
                         <span class="input-icon-left">👤</span>
                         <input type="text" id="card-name" class="form-input has-icon-left"
                           value="${user?.name || ''}"
-                          placeholder="Ola Nordmann" autocomplete="cc-name" />
+                          placeholder="${t('payment.card.holder_ph')}" autocomplete="cc-name" />
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="form-label required">Kortnummer</label>
+                      <label class="form-label required">${t('payment.card.number')}</label>
                       <div class="input-wrapper">
                         <span class="input-icon-left">💳</span>
                         <input type="text" id="card-number" class="form-input has-icon-left"
@@ -148,35 +148,35 @@ export async function renderPayment(params) {
                           autocomplete="cc-number" inputmode="numeric" />
                         <span class="input-icon-right" id="card-brand" style="pointer-events:none">💳</span>
                       </div>
-                      <span class="form-hint">Bruk 4242 4242 4242 4242 for demo</span>
+                      <span class="form-hint">${t('payment.card.demo_hint')}</span>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)">
                       <div class="form-group">
-                        <label class="form-label required">Utløpsdato</label>
+                        <label class="form-label required">${t('payment.card.expiry')}</label>
                         <input type="text" id="card-expiry" class="form-input"
                           placeholder="MM/ÅÅ" maxlength="5"
                           autocomplete="cc-exp" inputmode="numeric" />
                       </div>
                       <div class="form-group">
-                        <label class="form-label required">CVC</label>
+                        <label class="form-label required">${t('payment.card.cvc')}</label>
                         <div class="input-wrapper">
                           <input type="text" id="card-cvc" class="form-input"
                             placeholder="123" maxlength="4"
                             autocomplete="cc-csc" inputmode="numeric" />
-                          <span class="input-icon-right" style="pointer-events:none" title="3 siffer på baksiden">🔒</span>
+                          <span class="input-icon-right" style="pointer-events:none" title="${t('payment.card.cvc_hint')}">🔒</span>
                         </div>
                       </div>
                     </div>
 
                     <label class="form-checkbox">
                       <input type="checkbox" id="save-card" />
-                      <span class="checkbox-label" style="font-size:var(--text-xs)">Lagre kortet for fremtidige kjøp (kryptert)</span>
+                      <span class="checkbox-label" style="font-size:var(--text-xs)">${t('payment.card.save')}</span>
                     </label>
 
                     <button type="submit" class="btn btn-primary btn-block btn-xl" id="pay-card-btn">
-                      🔒 Betal 299 NOK
+                      ${t('payment.card.btn_pay')}
                     </button>
-                    <p style="text-align:center;font-size:var(--text-xs);color:var(--color-text-muted)">🔒 Sikret med 256-bit SSL · PCI DSS-sertifisert</p>
+                    <p style="text-align:center;font-size:var(--text-xs);color:var(--color-text-muted)">${t('payment.card.secure_hint')}</p>
                   </div>
                 </form>
               </div>
@@ -185,14 +185,14 @@ export async function renderPayment(params) {
               <div id="panel-vipps" class="payment-panel hidden">
                 <div style="text-align:center;padding:var(--space-8)">
                   <div style="font-size:4rem;margin-bottom:var(--space-4)">📱</div>
-                  <h3 style="font-family:var(--font-heading);font-weight:700;margin-bottom:var(--space-3)">Betal med Vipps</h3>
+                  <h3 style="font-family:var(--font-heading);font-weight:700;margin-bottom:var(--space-3)">${t('payment.vipps.title')}</h3>
                   <p style="color:var(--color-text-secondary);font-size:var(--text-sm);margin-bottom:var(--space-6)">
-                    Du vil bli videresendt til Vipps-appen for å fullføre betalingen på 299 NOK.
+                    ${t('payment.vipps.desc')}
                   </p>
 
                   <!-- Phone input for Vipps -->
                   <div class="form-group" style="max-width:280px;margin:0 auto var(--space-6)">
-                    <label class="form-label">Ditt mobilnummer</label>
+                    <label class="form-label">${t('payment.vipps.phone')}</label>
                     <div class="input-wrapper">
                       <span class="input-icon-left">📱</span>
                       <input type="tel" id="vipps-phone" class="form-input has-icon-left"
@@ -203,11 +203,11 @@ export async function renderPayment(params) {
 
                   <div style="background:linear-gradient(135deg,#ff5b24,#ff5b24 60%,#e84f1a);border-radius:var(--radius-xl);padding:var(--space-1);display:inline-block;margin-bottom:var(--space-4)">
                     <button id="pay-vipps-btn" class="btn" style="background:white;color:#ff5b24;font-weight:700;padding:1rem 2.5rem;border-radius:var(--radius-lg);font-size:var(--text-lg);min-width:220px">
-                      💜 Betal med Vipps
+                      ${t('payment.vipps.btn')}
                     </button>
                   </div>
                   <br/>
-                  <p style="font-size:var(--text-xs);color:var(--color-text-muted)">Vipps MobilePay · Org 123456789</p>
+                  <p style="font-size:var(--text-xs);color:var(--color-text-muted)">${t('payment.vipps.footer')}</p>
                 </div>
               </div>
 
@@ -220,22 +220,22 @@ export async function renderPayment(params) {
                       <span style="font-size:1.5rem">🏢</span>
                       <div>
                         <div style="font-weight:700;font-size:var(--text-sm)">${user?.company || 'Din bedrift'}</div>
-                        <div style="font-size:var(--text-xs);color:var(--color-text-muted)">Fakturaberettiget konto · 30 dagers betalingsfrist</div>
+                        <div style="font-size:var(--text-xs);color:var(--color-text-muted)">${t('payment.invoice.company_desc')}</div>
                       </div>
                     </div>
                   </div>
 
                   <div style="display:flex;flex-direction:column;gap:var(--space-4)">
                     <div class="form-group">
-                      <label class="form-label">Fakturaadresse e-post</label>
+                      <label class="form-label">${t('payment.invoice.email')}</label>
                       <input type="email" id="invoice-email" class="form-input" placeholder="regnskap@bedrift.no" value="" />
                     </div>
                     <div class="form-group">
-                      <label class="form-label">PO-nummer / referanse</label>
-                      <input type="text" id="invoice-ref" class="form-input" placeholder="Valgfritt — f.eks. PO-2024-001" />
+                      <label class="form-label">${t('payment.invoice.ref')}</label>
+                      <input type="text" id="invoice-ref" class="form-input" placeholder="${t('payment.invoice.ref_ph')}" />
                     </div>
                     <button id="pay-invoice-btn" class="btn btn-primary btn-block btn-xl">
-                      📧 Send faktura (299 NOK)
+                      ${t('payment.invoice.btn')}
                     </button>
                   </div>
                 </div>
@@ -248,8 +248,8 @@ export async function renderPayment(params) {
           <div id="payment-processing" class="hidden" style="position:fixed;inset:0;background:rgba(11,22,35,0.9);backdrop-filter:blur(8px);z-index:9000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem">
             <div class="spinner spinner-lg"></div>
             <div style="text-align:center">
-              <div style="font-family:var(--font-heading);font-weight:700;font-size:var(--text-lg);margin-bottom:0.5rem">Behandler betaling...</div>
-              <div style="color:var(--color-text-muted);font-size:var(--text-sm)">Ikke lukk vinduet</div>
+              <div style="font-family:var(--font-heading);font-weight:700;font-size:var(--text-lg);margin-bottom:0.5rem">${t('payment.processing')}</div>
+              <div style="color:var(--color-text-muted);font-size:var(--text-sm)">${t('payment.processing_desc')}</div>
             </div>
           </div>
         </div>
