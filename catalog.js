@@ -283,7 +283,15 @@ export async function renderEquipmentDetail(params) {
 
             <!-- Detail & CTA Panel -->
             <div class="animate-fadeInRight">
-              <div class="badge badge-gray" style="margin-bottom:var(--space-3)">${equipment.subcategory}</div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:var(--space-3)">
+                <div class="badge badge-gray" style="margin:0">${equipment.subcategory}</div>
+                ${Auth.isAdmin() ? `
+                  <div style="display:flex;gap:0.25rem">
+                    <button class="btn btn-gold btn-xs detail-edit-btn" data-id="${equipment.id}">✏️ Endre</button>
+                    <button class="btn btn-primary btn-xs detail-delete-btn" data-id="${equipment.id}" style="background:var(--color-danger);border-color:transparent">🗑️ Slett</button>
+                  </div>
+                ` : ''}
+              </div>
               <h1 style="font-family:var(--font-heading);font-size:var(--text-3xl);font-weight:800;margin-bottom:var(--space-4)">${name}</h1>
               <p style="color:var(--color-text-secondary);font-size:var(--text-md);line-height:1.75;margin-bottom:var(--space-6)">${desc}</p>
 
@@ -364,6 +372,34 @@ export async function renderEquipmentDetail(params) {
       const grid = document.getElementById('detail-grid');
       if (grid && window.innerWidth >= 1024) {
         grid.style.gridTemplateColumns = '1fr 1fr';
+      }
+
+      // Admin buttons
+      const editBtn = document.querySelector('.detail-edit-btn');
+      if (editBtn) {
+        editBtn.addEventListener('click', () => {
+          sessionStorage.setItem('auto_edit_eq_id', equipment.id);
+          window.location.hash = '#/admin/equipment';
+        });
+      }
+
+      const deleteBtn = document.querySelector('.detail-delete-btn');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', async () => {
+          const confirmMsg = lang === 'no'
+            ? `Er du sikker på at du vil slette "${name}" og dens tilhørende kurs?`
+            : `Are you sure you want to delete "${equipment.name}" and its course?`;
+          if (confirm(confirmMsg)) {
+            try {
+              Toast.info(lang === 'no' ? 'Sletter...' : 'Deleting...');
+              await API.deleteEquipment(equipment.id);
+              Toast.success(lang === 'no' ? 'Slettet!' : 'Deleted!');
+              window.location.hash = '#/catalog';
+            } catch(e) {
+              Toast.error(e.message, 'Feil');
+            }
+          }
+        });
       }
     }
   };

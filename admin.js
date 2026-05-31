@@ -948,6 +948,16 @@ function initAdminHandlers(pendingList, equipmentList) {
       }
     });
   }
+
+  // Auto-edit check on load from details page redirect
+  const autoEditId = sessionStorage.getItem('auto_edit_eq_id');
+  if (autoEditId) {
+    sessionStorage.removeItem('auto_edit_eq_id');
+    setTimeout(() => {
+      const editBtn = document.querySelector(`.admin-edit-eq-btn[data-id="${autoEditId}"]`);
+      if (editBtn) editBtn.click();
+    }, 100);
+  }
 }
 
 // Helper to compile and download accounting ledger in Visma format

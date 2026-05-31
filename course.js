@@ -78,6 +78,9 @@ export async function renderCourse(params) {
 
               <!-- Notes & Offline toggle -->
               <div style="display:flex;align-items:center;gap:var(--space-2);flex-shrink:0">
+                ${Auth.isAdmin() ? `
+                  <button class="btn btn-ghost btn-sm btn-icon" id="course-admin-edit-btn" title="${lang === 'no' ? 'Rediger kurs' : 'Edit Course'}" style="font-size:1rem">✏️</button>
+                ` : ''}
                 ${equipment.pdfUrl ? `
                   <a href="${equipment.pdfUrl}" target="_blank" class="btn btn-primary btn-sm hover-glow-red" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;font-size:var(--text-xs);font-weight:700;padding:var(--space-2) var(--space-3);height:auto" title="${lang === 'no' ? 'Last ned PDF' : 'Download PDF'}">
                     📥 PDF
@@ -424,6 +427,12 @@ function initCourseHandlers({ equipment, sections, enrollment, equipmentId, tota
   document.getElementById('save-notes-btn')?.addEventListener('click', () => {
     Store.set(noteKey, notesArea?.value || '');
     Toast.success(I18n.t('course.notes_saved'), '📝');
+  });
+
+  // Admin edit button click listener
+  document.getElementById('course-admin-edit-btn')?.addEventListener('click', () => {
+    sessionStorage.setItem('auto_edit_eq_id', equipmentId);
+    window.location.hash = '#/admin/equipment';
   });
 
   // ── Initial Render ──────────────────────────────────────────────────────────
